@@ -1,10 +1,13 @@
-import RegisterForm from "./components/RegisterForm";
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import Registro from './pages/Cliente/Registro';
 
 function App() {
   return (
-    <div className="App">
-      <RegisterForm />
-    </div>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/registro" element={<Registro />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
 

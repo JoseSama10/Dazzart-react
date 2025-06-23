@@ -8,6 +8,8 @@ import "../../css/CSSA/gestionproductos.css";
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import Swal from 'sweetalert2';
 
+// Importa tu sidebar personalizado
+import SidebarAdmin from "../../components/SidebarAdmin";
 
 export default function ProductosAdmin() {
   const [productos, setProductos] = useState([]);
@@ -16,7 +18,6 @@ export default function ProductosAdmin() {
   const cargarProductos = () => {
     axios
       .get("http://localhost:3001/productos/listar")
-
       .then((res) => {
         if (Array.isArray(res.data)) {
           setProductos(res.data);
@@ -59,94 +60,55 @@ export default function ProductosAdmin() {
   useEffect(() => {
     cargarProductos();
   }, []);
-  
 
-    // Función para eliminar un producto 
-const eliminarProducto = async (id) => {
-  const confirm = await Swal.fire({
-    icon: 'question',
-    title: 'Eliminar producto',
-    text: '¿Estás seguro de eliminar este producto?',
-    showCancelButton: true,
-    confirmButtonText: 'Sí, eliminar',
-    cancelButtonText: 'Cancelar',
-  });
-
-  if (!confirm.isConfirmed) return;
-
-  try {
-    const response = await await axios.delete(`http://localhost:3001/productos/eliminar/${id}`);
-;
-    if (response.status === 200) {
-      await Swal.fire({
-        icon: 'success',
-        title: 'Producto eliminado',
-        text: 'El producto ha sido eliminado con éxito.',
-      });
-      cargarProductos(); // o setIsDataUpdated(true) si tienes control de refrescar datos
-    }
-  } catch (error) {
-    console.error('Error al eliminar:', error);
-    Swal.fire({
-      icon: 'error',
-      title: 'Error',
-      text: 'No se pudo eliminar el producto.',
+  // Función para eliminar un producto
+  const eliminarProducto = async (id) => {
+    const confirm = await Swal.fire({
+      icon: 'question',
+      title: 'Eliminar producto',
+      text: '¿Estás seguro de eliminar este producto?',
+      showCancelButton: true,
+      confirmButtonText: 'Sí, eliminar',
+      cancelButtonText: 'Cancelar',
     });
-  }
-};
 
+    if (!confirm.isConfirmed) return;
+
+    try {
+      const response = await axios.delete(`http://localhost:3001/productos/eliminar/${id}`);
+      if (response.status === 200) {
+        await Swal.fire({
+          icon: 'success',
+          title: 'Producto eliminado',
+          text: 'El producto ha sido eliminado con éxito.',
+        });
+        if ($.fn.DataTable.isDataTable("#tablaProductos")) {
+          $("#tablaProductos").DataTable().destroy();
+        }
+        cargarProductos();
+      }
+    } catch (error) {
+      console.error('Error al eliminar:', error);
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'No se pudo eliminar el producto.',
+      });
+    }
+  };
 
   return (
     <>
-      {/* Sidebar (versión escritorio) */}
-      <div className="sidebar d-none d-md-block">
-        <h5>Dazzart Components</h5>
-        <ul className="nav flex-column">
-          <li><a href="/admin-categorias">Categorías</a></li>
-          <li><a href="/admin-subcategorias">Subcategorías</a></li>
-          <li><a href="#">Productos</a></li>
-          <li><a href="#">Descuentos</a></li>
-          <li><a href="#">Pedidos</a></li>
-          <li>
-            <a href="#" data-bs-toggle="collapse" data-bs-target="#configMenu">Configuración</a>
-            <ul className="collapse" id="configMenu">
-              <li><a className="nav-link text-white" href="#">Clientes</a></li>
-              <li><a className="nav-link text-white" href="#">Salir</a></li>
-            </ul>
-          </li>
-        </ul>
-      </div>
+      {/* Sidebar fijo */}
+      <SidebarAdmin />
 
-      {/* Sidebar móvil */}
-      <button className="btn btn-dark d-md-none m-3" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebarMenu">
-        ☰ Menú
-      </button>
+      {/* Contenido principal con margen para el sidebar */}
+      <main
+        className="main-content p-4"
+        style={{ marginLeft: "280px" }} // mismo ancho que el sidebar para que no se sobreponga
+      >
 
-      <div className="offcanvas offcanvas-start text-bg-dark" tabIndex="-1" id="sidebarMenu">
-        <div className="offcanvas-header">
-          <h5 className="offcanvas-title">Dazzart Components</h5>
-          <button type="button" className="btn-close btn-close-white" data-bs-dismiss="offcanvas"></button>
-        </div>
-        <div className="offcanvas-body">
-          <ul className="nav flex-column">
-            <li><a href="/admin-categorias">Categorías</a></li>
-            <li><a href="/admin-subcategorias">Subcategorías</a></li>
-            <li><a href="#">Productos</a></li>
-            <li><a className="nav-link text-white" href="#">Pedidos</a></li>
-            <li><a href="#">Descuentos</a></li>
-            <li>
-              <a className="nav-link text-white" data-bs-toggle="collapse" href="#configMenuMobile">Configuración</a>
-              <ul className="collapse" id="configMenuMobile">
-                <li><a className="nav-link text-white" href="#">Clientes</a></li>
-                <li><a className="nav-link text-white" href="#">Salir</a></li>
-              </ul>
-            </li>
-          </ul>
-        </div>
-      </div>
 
-      {/* Contenido principal */}
-      <div className="main-content p-4">
         <div className="d-flex justify-content-between align-items-center mb-3">
           <h1>Gestión de Productos</h1>
           <a href="/agregar-producto" className="btn btn-warning text-white">Añadir Producto</a>
@@ -199,8 +161,7 @@ const eliminarProducto = async (id) => {
             ))}
           </tbody>
         </table>
-      </div>
+      </main>
     </>
   );
-  
 }

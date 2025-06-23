@@ -5,18 +5,17 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "datatables.net-bs5";
 import "datatables.net-bs5/css/dataTables.bootstrap5.min.css";
 import "../../css/CSSA/gestionproductos.css";
-import 'bootstrap/dist/js/bootstrap.bundle.min.js';
+import "bootstrap/dist/js/bootstrap.bundle.min.js";
 import Swal from "sweetalert2";
+
+import SidebarAdmin from "../../components/SidebarAdmin";
 
 export default function CategoriasAdmin() {
   const [categorias, setCategorias] = useState([]);
   const [form, setForm] = useState({ nombre: "", descripcion: "" });
-
-  // Para edición
   const [showEditModal, setShowEditModal] = useState(false);
   const [editForm, setEditForm] = useState({ id_categoria: null, nombre: "", descripcion: "" });
 
-  // Función para cargar categorías
   const cargarCategorias = () => {
     axios
       .get("http://localhost:3001/categorias/listar")
@@ -27,7 +26,6 @@ export default function CategoriasAdmin() {
           setCategorias([]);
           console.error("La respuesta no es un arreglo:", res.data);
         }
-
         setTimeout(() => {
           if (!$.fn.DataTable.isDataTable("#tablaCategorias")) {
             $("#tablaCategorias").DataTable({
@@ -63,7 +61,6 @@ export default function CategoriasAdmin() {
     cargarCategorias();
   }, []);
 
-  // Manejo del formulario nuevo
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
@@ -86,7 +83,6 @@ export default function CategoriasAdmin() {
     }
   };
 
-  // Eliminar categoría
   const eliminarCategoria = async (id) => {
     const confirm = await Swal.fire({
       icon: "question",
@@ -122,7 +118,6 @@ export default function CategoriasAdmin() {
     }
   };
 
-  // Abrir modal con datos para editar
   const abrirEditarModal = (categoria) => {
     setEditForm({
       id_categoria: categoria.id_categoria,
@@ -132,12 +127,10 @@ export default function CategoriasAdmin() {
     setShowEditModal(true);
   };
 
-  // Manejar cambios en el form de edición
   const handleEditChange = (e) => {
     setEditForm({ ...editForm, [e.target.name]: e.target.value });
   };
 
-  // Guardar edición
   const guardarEdicion = async (e) => {
     e.preventDefault();
     const { id_categoria, nombre, descripcion } = editForm;
@@ -164,114 +157,25 @@ export default function CategoriasAdmin() {
 
   return (
     <>
-      {/* Sidebar (versión escritorio) */}
-      <div className="sidebar d-none d-md-block">
-        <h5>Dazzart Components</h5>
-        <ul className="nav flex-column">
-          <li>
-            <a href="/admin-categorias">Categorías</a>
-          </li>
-          <li>
-            <a href="/admin-subcategorias">Subcategorías</a>
-          </li>
-          <li>
-            <a href="#">Productos</a>
-          </li>
-          <li>
-            <a href="#">Descuentos</a>
-          </li>
-          <li>
-            <a href="#">Pedidos</a>
-          </li>
-          <li>
-            <a href="#" data-bs-toggle="collapse" data-bs-target="#configMenu">
-              Configuración
-            </a>
-            <ul className="collapse" id="configMenu">
-              <li>
-                <a className="nav-link text-white" href="#">
-                  Clientes
-                </a>
-              </li>
-              <li>
-                <a className="nav-link text-white" href="#">
-                  Salir
-                </a>
-              </li>
-            </ul>
-          </li>
-        </ul>
-      </div>
+      {/* Sidebar fijo */}
+      <SidebarAdmin />
 
-      {/* Sidebar móvil */}
-      <button
-        className="btn btn-dark d-md-none m-3"
-        type="button"
-        data-bs-toggle="offcanvas"
-        data-bs-target="#sidebarMenu"
+      {/* Contenido principal con margen para que no quede debajo del sidebar */}
+      <main
+        className="main-content p-4"
+        style={{ marginLeft: "280px" }} // Ajusta según el ancho de tu sidebar
       >
-        ☰ Menú
-      </button>
+        {/* Botón menú móvil para abrir sidebar */}
+        <button
+          className="btn btn-dark d-md-none mb-3"
+          type="button"
+          data-bs-toggle="offcanvas"
+          data-bs-target="#sidebarMenu"
+          aria-controls="sidebarMenu"
+        >
+          ☰ Menú
+        </button>
 
-      <div
-        className="offcanvas offcanvas-start text-bg-dark"
-        tabIndex="-1"
-        id="sidebarMenu"
-      >
-        <div className="offcanvas-header">
-          <h5 className="offcanvas-title">Dazzart Components</h5>
-          <button
-            type="button"
-            className="btn-close btn-close-white"
-            data-bs-dismiss="offcanvas"
-          ></button>
-        </div>
-        <div className="offcanvas-body">
-          <ul className="nav flex-column">
-            <li>
-              <a href="/admin-categorias">Categorías</a>
-            </li>
-            <li>
-              <a href="/admin-subcategorias">Subcategorías</a>
-            </li>
-            <li>
-              <a href="#">Productos</a>
-            </li>
-            <li>
-              <a className="nav-link text-white" href="#">
-                Pedidos
-              </a>
-            </li>
-            <li>
-              <a href="#">Descuentos</a>
-            </li>
-            <li>
-              <a
-                className="nav-link text-white"
-                data-bs-toggle="collapse"
-                href="#configMenuMobile"
-              >
-                Configuración
-              </a>
-              <ul className="collapse" id="configMenuMobile">
-                <li>
-                  <a className="nav-link text-white" href="#">
-                    Clientes
-                  </a>
-                </li>
-                <li>
-                  <a className="nav-link text-white" href="#">
-                    Salir
-                  </a>
-                </li>
-              </ul>
-            </li>
-          </ul>
-        </div>
-      </div>
-
-      {/* Contenido principal */}
-      <div className="main-content p-4">
         <h2>Agregar nueva categoría</h2>
         <form className="row g-3 mb-4" onSubmit={handleSubmit}>
           <div className="col-md-4">
@@ -297,10 +201,7 @@ export default function CategoriasAdmin() {
             />
           </div>
           <div className="col-md-2">
-            <button
-              type="submit"
-              className="btn btn-warning text-white w-100"
-            >
+            <button type="submit" className="btn btn-warning text-white w-100">
               Añadir
             </button>
           </div>
@@ -341,7 +242,7 @@ export default function CategoriasAdmin() {
             ))}
           </tbody>
         </table>
-      </div>
+      </main>
 
       {/* Modal para editar */}
       <div
@@ -351,11 +252,7 @@ export default function CategoriasAdmin() {
         style={{ backgroundColor: showEditModal ? "rgba(0,0,0,0.5)" : "transparent" }}
         onClick={() => setShowEditModal(false)}
       >
-        <div
-          className="modal-dialog"
-          role="document"
-          onClick={(e) => e.stopPropagation()}
-        >
+        <div className="modal-dialog" role="document" onClick={(e) => e.stopPropagation()}>
           <div className="modal-content">
             <form onSubmit={guardarEdicion}>
               <div className="modal-header">
@@ -391,11 +288,7 @@ export default function CategoriasAdmin() {
                 </div>
               </div>
               <div className="modal-footer">
-                <button
-                  type="button"
-                  className="btn btn-secondary"
-                  onClick={() => setShowEditModal(false)}
-                >
+                <button type="button" className="btn btn-secondary" onClick={() => setShowEditModal(false)}>
                   Cancelar
                 </button>
                 <button type="submit" className="btn btn-primary">

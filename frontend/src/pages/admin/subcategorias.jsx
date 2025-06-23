@@ -5,8 +5,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "datatables.net-bs5";
 import "datatables.net-bs5/css/dataTables.bootstrap5.min.css";
 import Swal from "sweetalert2";
-import SidebarAdmin from "../../components/SidebarAdmin"; 
-
+import SidebarAdmin from "../../components/SidebarAdmin";
 
 export default function SubcategoriasAdmin() {
   const [subcategorias, setSubcategorias] = useState([]);
@@ -168,93 +167,128 @@ export default function SubcategoriasAdmin() {
 
   return (
     <>
-      <SidebarAdmin />
-      <div className="container py-4" style={{ marginLeft: "220px" }}>
-        <h2>Agregar nueva Subcategoría</h2>
-        <form className="row g-3 mb-4" onSubmit={handleSubmit}>
-          <div className="col-md-4">
-            <input
-              type="text"
-              name="nombre_subcategoria"
-              className="form-control"
-              placeholder="Nombre"
-              value={form.nombre_subcategoria}
-              onChange={handleChange}
-            />
-          </div>
-          <div className="col-md-4">
-            <select
-              name="id_categoria"
-              className="form-select"
-              value={form.id_categoria}
-              onChange={handleChange}
-              required
-            >
-              <option value="">Selecciona Categoría</option>
-              {categorias.map((cat) => (
-                <option key={cat.id_categoria} value={cat.id_categoria}>
-                  {cat.nombre_categoria}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div className="col-md-4">
-            <input
-              type="text"
-              name="descripcion_subcategoria"
-              className="form-control"
-              placeholder="Descripción"
-              value={form.descripcion_subcategoria}
-              onChange={handleChange}
-              required
-            />
-          </div>
-          <div className="col-md-2">
-            <button type="submit" className="btn btn-warning text-white w-100">
-              Añadir
-            </button>
-          </div>
-        </form>
+      <div className="d-flex">
+        <SidebarAdmin />
 
-        <table className="table table-striped table-hover" id="tablaSubcategorias">
-          <thead className="table-dark">
-            <tr>
-              <th>ID</th>
-              <th>Nombre</th>
-              <th>Categoría</th>
-              <th>Descripción</th>
-              <th>Acciones</th>
-            </tr>
-          </thead>
-          <tbody>
-            {subcategorias.map((subcat) => (
-              <tr key={subcat.id_subcategoria}>
-                <td>{subcat.id_subcategoria}</td>
-                <td>{subcat.nombre_subcategoria}</td>
-                <td>{subcat.nombre_categoria}</td>
-                <td>{subcat.descripcion_subcategoria}</td>
-                <td>
-                  <button className="btn btn-success me-2" onClick={() => abrirEditarModal(subcat)}>Editar</button>
-                  <button className="btn btn-danger" onClick={() => eliminarSubcategoria(subcat.id_subcategoria)}>Eliminar</button>
-                </td>
+        <main className="flex-grow-1 p-4" style={{ marginLeft: "280px" }}>
+          <h2>Agregar nueva Subcategoría</h2>
+          <form className="row g-3 mb-4" onSubmit={handleSubmit}>
+            <div className="col-md-4">
+              <input
+                type="text"
+                name="nombre_subcategoria"
+                className="form-control"
+                placeholder="Nombre"
+                value={form.nombre_subcategoria}
+                onChange={handleChange}
+              />
+            </div>
+            <div className="col-md-4">
+              <select
+                name="id_categoria"
+                className="form-select"
+                value={form.id_categoria}
+                onChange={handleChange}
+                required
+              >
+                <option value="">Selecciona Categoría</option>
+                {categorias.map((cat) => (
+                  <option key={cat.id_categoria} value={cat.id_categoria}>
+                    {cat.nombre_categoria}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="col-md-4">
+              <input
+                type="text"
+                name="descripcion_subcategoria"
+                className="form-control"
+                placeholder="Descripción"
+                value={form.descripcion_subcategoria}
+                onChange={handleChange}
+                required
+              />
+            </div>
+            <div className="col-md-2">
+              <button type="submit" className="btn btn-warning text-white w-100">
+                Añadir
+              </button>
+            </div>
+          </form>
+
+          <table className="table table-striped table-hover" id="tablaSubcategorias">
+            <thead className="table-dark">
+              <tr>
+                <th>ID</th>
+                <th>Nombre</th>
+                <th>Categoría</th>
+                <th>Descripción</th>
+                <th>Acciones</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {subcategorias.map((subcat) => (
+                <tr key={subcat.id_subcategoria}>
+                  <td>{subcat.id_subcategoria}</td>
+                  <td>{subcat.nombre_subcategoria}</td>
+                  <td>{subcat.nombre_categoria}</td>
+                  <td>{subcat.descripcion_subcategoria}</td>
+                  <td>
+                    <button
+                      className="btn btn-success me-2"
+                      onClick={() => abrirEditarModal(subcat)}
+                    >
+                      Editar
+                    </button>
+                    <button
+                      className="btn btn-danger"
+                      onClick={() => eliminarSubcategoria(subcat.id_subcategoria)}
+                    >
+                      Eliminar
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </main>
       </div>
 
-      {/* Modal Edición */}
-      <div className={`modal fade ${showEditModal ? "show d-block" : ""}`} tabIndex="-1" style={{ backgroundColor: showEditModal ? "rgba(0,0,0,0.5)" : "transparent" }} onClick={() => setShowEditModal(false)}>
+      {/* Modal de edición */}
+      <div
+        className={`modal fade ${showEditModal ? "show d-block" : ""}`}
+        tabIndex="-1"
+        style={{ backgroundColor: showEditModal ? "rgba(0,0,0,0.5)" : "transparent" }}
+        onClick={() => setShowEditModal(false)}
+      >
         <div className="modal-dialog" onClick={(e) => e.stopPropagation()}>
           <div className="modal-content">
             <form onSubmit={guardarEdicion}>
               <div className="modal-header">
                 <h5 className="modal-title">Editar Subcategoría</h5>
-                <button type="button" className="btn-close" onClick={() => setShowEditModal(false)}></button>
+                <button
+                  type="button"
+                  className="btn-close"
+                  onClick={() => setShowEditModal(false)}
+                ></button>
               </div>
               <div className="modal-body">
-                <input type="text" className="form-control mb-3" name="nombre_subcategoria" value={editForm.nombre_subcategoria} onChange={handleEditChange} required />
-                <select className="form-select mb-3" name="id_categoria" value={editForm.id_categoria} onChange={handleEditChange} required>
+                <input
+                  type="text"
+                  className="form-control mb-3"
+                  name="nombre_subcategoria"
+                  value={editForm.nombre_subcategoria}
+                  onChange={handleEditChange}
+                  required
+                />
+                <select
+                  className="form-select mb-3"
+                  name="id_categoria"
+                  value={editForm.id_categoria}
+                  onChange={handleEditChange}
+                  required
+                >
                   <option value="">Selecciona Categoría</option>
                   {categorias.map((cat) => (
                     <option key={cat.id_categoria} value={cat.id_categoria}>
@@ -262,11 +296,26 @@ export default function SubcategoriasAdmin() {
                     </option>
                   ))}
                 </select>
-                <input type="text" className="form-control mb-3" name="descripcion_subcategoria" value={editForm.descripcion_subcategoria} onChange={handleEditChange} required />
+                <input
+                  type="text"
+                  className="form-control mb-3"
+                  name="descripcion_subcategoria"
+                  value={editForm.descripcion_subcategoria}
+                  onChange={handleEditChange}
+                  required
+                />
               </div>
               <div className="modal-footer">
-                <button type="button" className="btn btn-secondary" onClick={() => setShowEditModal(false)}>Cancelar</button>
-                <button type="submit" className="btn btn-primary">Guardar Cambios</button>
+                <button
+                  type="button"
+                  className="btn btn-secondary"
+                  onClick={() => setShowEditModal(false)}
+                >
+                  Cancelar
+                </button>
+                <button type="submit" className="btn btn-primary">
+                  Guardar Cambios
+                </button>
               </div>
             </form>
           </div>

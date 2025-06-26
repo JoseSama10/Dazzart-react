@@ -3,6 +3,7 @@ const cors = require('cors');
 
 
 const userRoutes = require('./routes/userRouter')
+const descuentoRoutes = require('./routes/descuentoRouter');
 
 
 
@@ -30,7 +31,7 @@ const createApp = () => {
     res.send('Bienvenido a la API de DAZZART');
   });
   app.use('/api/usuarios', userRoutes);
-  
+  app.use('/api/descuentos', descuentoRoutes); 
 
 
   return app;

@@ -8,7 +8,7 @@ import "../../css/CSSA/gestionusuarios.css";
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import Swal from 'sweetalert2';
 
-import SidebarAdmin from "../../components/SidebarAdmin";
+import SidebarAdmin from "../../components/SideBarAdmin";
 
 export default function UsuariosAdmin() {
   const [usuarios, setUsuarios] = useState([]);

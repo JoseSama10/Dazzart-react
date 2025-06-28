@@ -1,9 +1,9 @@
 import React from 'react';
 
-// Importar imagenes desde src/assets/img/
 import banner1 from '../../assets/img/2023-3-banner-scaled (1).jpg';
 import banner2 from '../../assets/img/banners-web-GT-1 (1).jpg';
 import banner3 from '../../assets/img/BANNER_MI_PC_4 (1).jpg';
+
 
 export default function Carrusel() {
   return (
@@ -11,8 +11,8 @@ export default function Carrusel() {
       id="carouselExampleIndicators"
       className="carousel slide my-4"
       data-bs-ride="carousel"
-      data-bs-interval="3000" // <-- tiempo entre slides (en milisegundos)
-      data-bs-wrap="true"     // <-- para que se repita infinitamente
+      data-bs-interval="3000"
+      data-bs-wrap="true"
     >
       {/* Indicadores */}
       <div className="carousel-indicators">
@@ -21,20 +21,20 @@ export default function Carrusel() {
         <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="2" aria-label="Slide 3" />
       </div>
 
-      {/* Imágenes del carrusel */}
+      {/* Imágenes */}
       <div className="carousel-inner mx-auto w-75">
         <div className="carousel-item active">
-          <img src={banner1} className="d-block w-100" alt="Slide 1" />
+          <img src={banner1} className="d-block w-100" alt="Banner 1" />
         </div>
         <div className="carousel-item">
-          <img src={banner2} className="d-block w-100" alt="Slide 2" />
+          <img src={banner2} className="d-block w-100" alt="Banner 2" />
         </div>
         <div className="carousel-item">
-          <img src={banner3} className="d-block w-100" alt="Slide 3" />
+          <img src={banner3} className="d-block w-100" alt="Banner 3" />
         </div>
       </div>
 
-      {/* Controles anterior/siguiente */}
+      {/* Controles */}
       <button className="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
         <span className="carousel-control-prev-icon" aria-hidden="true" />
         <span className="visually-hidden">Anterior</span>

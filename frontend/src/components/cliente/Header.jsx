@@ -1,7 +1,10 @@
 import React from 'react';
-import logo from '../../assets/img/Captura de pantalla 2024-11-25 183458.png';   // ← importa la imagen
+// import logo from '../../assets/img/Captura de pantalla 2024-11-25 183458.png';   // ← importa la imagen
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCartShopping } from '@fortawesome/free-solid-svg-icons';
+import logo from '../../assets/img/Captura de pantalla 2024-11-25 183458.png'; // Asegúrate de que la ruta sea correcta
 
-export default function Header({ onOpenMenu }) {
+export default function Header({ onOpenMenu, onOpenCarrito }) {
   return (
     <header className="container-fluid py-2 shadow-sm">
       <div className="row align-items-center">
@@ -43,9 +46,9 @@ export default function Header({ onOpenMenu }) {
           <button id="login-btn" className="btn btn-outline-info me-2">
             <i className="fa-solid fa-user"></i>
           </button>
-          <a href="/compras" className="btn btn-outline-warning">
-            <i className="fas fa-shopping-cart"></i>
-          </a>
+          <button onClick={onOpenCarrito} className="btn btn-outline-warning">
+            <FontAwesomeIcon icon={faCartShopping} />
+          </button>
         </div>
       </div>
     </header>

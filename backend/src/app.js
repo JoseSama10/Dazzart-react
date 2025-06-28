@@ -2,6 +2,8 @@ const express = require('express');
 const cors = require('cors');
 
 const pedidosRouter = require('./routes/pedidosRouter');
+const carritoRouter = require('./routes/carritoRouter');
+const productosRouter = require('./routes/productos.Router');
 
 const createApp = () => {
   const app = express();
@@ -29,6 +31,8 @@ const createApp = () => {
 
   // Solo ruta de pedidos
   app.use('/pedidos', pedidosRouter);
+  app.use('/carrito', carritoRouter);
+  app.use('/api/productos', productosRouter);
 
   return app;
 };

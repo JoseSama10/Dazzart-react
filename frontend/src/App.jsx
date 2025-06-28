@@ -6,6 +6,7 @@ import VerFactura from "./pages/admin/VerFactura";
 
 // Cliente
 import ClienteHome from "./pages/cliente/ClienteHome"; // 👈 Tu página principal del e-commerce
+import CarritoPage from "./pages/cliente/CarritoPage";
 
 function App() {
   return (
@@ -13,6 +14,7 @@ function App() {
       <Routes>
         {/* Cliente */}
         <Route path="/" element={<ClienteHome />} />
+        <Route path="/carrito" element={<CarritoPage />} />
 
         {/* Admin */}
         <Route path="/admin-pedidos" element={<Pedidos />} /> 

@@ -54,7 +54,32 @@ const obtenerPedidoPorId = (req, res) => {
   });
 };
 
+const crearPedido = (req, res) => {
+  const { id_usuario, direccion, productos, total_productos, total } = req.body;
+
+  // Extrae solo los nombres (o nombre y cantidad)
+  const nombresProductos = productos.map(p => p.nombre).join(', ');
+  // Si quieres nombre y cantidad: productos.map(p => `${p.nombre} x${p.cantidad}`).join(', ');
+
+  const sql = `
+    INSERT INTO pedidos (id_usuario, direccion, productos, total_productos, total, estado)
+    VALUES (?, ?, ?, ?, ?, 'pendiente')
+  `;
+  db.query(
+    sql,
+    [id_usuario, direccion, nombresProductos, total_productos, total],
+    (err, result) => {
+      if (err) {
+        console.error('Error al crear pedido:', err);
+        return res.status(500).json({ error: 'Error al crear el pedido' });
+      }
+      res.json({ message: 'Pedido creado exitosamente', id_factura: result.insertId });
+    }
+  );
+};
+
 module.exports = {
   obtenerPedidos,
   obtenerPedidoPorId,
+  crearPedido,
 };

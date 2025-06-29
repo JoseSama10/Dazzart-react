@@ -1,14 +1,21 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import SidebarAdmin from "../../components/SidebarAdmin";
 
 const BASE_URL = "http://localhost:3001";
 
-export default function AñadirProducto() {
+export default function EditarProducto() {
+  const { id } = useParams();
   const navigate = useNavigate();
 
+  const [producto, setProducto] = useState(null);
+  const [imagenArchivo, setImagenArchivo] = useState(null);
+  const [imagenSeleccionada, setImagenSeleccionada] = useState("");
+  const [categorias, setCategorias] = useState([]);
+  const [subcategorias, setSubcategorias] = useState([]);
+  const [imagenesExistentes, setImagenesExistentes] = useState([]);
   const [form, setForm] = useState({
     numero_serial: "",
     nombre: "",
@@ -17,24 +24,33 @@ export default function AñadirProducto() {
     stock: "",
     id_categoria: "",
     id_subcategoria: "",
-    fecha_creacion: new Date().toISOString().split("T")[0],
+    fecha_creacion: "",
   });
 
-  const [imagenNueva, setImagenNueva] = useState(null);
-  const [imagenSeleccionada, setImagenSeleccionada] = useState("");
-
-  const [categorias, setCategorias] = useState([]);
-  const [subcategorias, setSubcategorias] = useState([]);
-  const [imagenesExistentes, setImagenesExistentes] = useState([]);
-
   useEffect(() => {
+    axios.get(`${BASE_URL}/productos/${id}`).then((res) => {
+      const data = res.data;
+      setProducto(data);
+      setForm({
+        numero_serial: data.numero_serial || "",
+        nombre: data.nombre || "",
+        descripcion: data.descripcion || "",
+        precio: data.precio || "",
+        stock: data.stock || "",
+        id_categoria: data.id_categoria || "",
+        id_subcategoria: data.id_subcategoria || "",
+        fecha_creacion: data.fecha_creacion?.split("T")[0] || "",
+      });
+      setImagenSeleccionada(data.imagen || "");
+    });
+
     axios.get(`${BASE_URL}/categorias/listar`).then((res) => {
       setCategorias(res.data || []);
     });
     axios.get(`${BASE_URL}/productos/listar-imagenes`).then((res) => {
       setImagenesExistentes(res.data.imagenes || []);
     });
-  }, []);
+  }, [id]);
 
   useEffect(() => {
     if (form.id_categoria) {
@@ -57,43 +73,43 @@ export default function AñadirProducto() {
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      setImagenNueva(file);
+      setImagenArchivo(file);
       setImagenSeleccionada("");
     }
   };
 
   const handleImageSelect = (imgName) => {
     setImagenSeleccionada(imgName);
-    setImagenNueva(null);
+    setImagenArchivo(null);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     const fd = new FormData();
-
     Object.entries(form).forEach(([key, value]) => {
-      fd.append(key, value);
+      if (key !== "fecha_creacion") fd.append(key, value);
     });
 
-    if (imagenNueva) {
-      fd.append("imagen", imagenNueva);
+    if (imagenArchivo) {
+      fd.append("imagen", imagenArchivo);
     } else if (imagenSeleccionada) {
       fd.append("imagen", imagenSeleccionada);
     }
 
     try {
-      await axios.post(`${BASE_URL}/productos/agregar`, fd, {
+      await axios.put(`${BASE_URL}/productos/editar/${id}`, fd, {
         headers: { "Content-Type": "multipart/form-data" },
       });
-
-      Swal.fire("Éxito", "Producto agregado correctamente", "success");
+      Swal.fire("Éxito", "Producto actualizado correctamente", "success");
       navigate("/admin-productos");
     } catch (error) {
-      console.error("Error al agregar producto:", error);
-      Swal.fire("Error", "No se pudo agregar el producto", "error");
+      console.error("Error al actualizar producto:", error);
+      Swal.fire("Error", "No se pudo actualizar el producto", "error");
     }
   };
+
+  if (!producto) return <p>Cargando producto...</p>;
 
   return (
     <div className="d-flex">
@@ -118,32 +134,13 @@ export default function AñadirProducto() {
             boxShadow: "0 0 10px rgba(0,0,0,0.1)",
           }}
         >
-          <h2 className="mb-4 text-center">Añadir Producto</h2>
+          <h2 className="mb-4 text-center">Editar Producto</h2>
           <form onSubmit={handleSubmit} encType="multipart/form-data">
-            {/* Número Serial */}
-            <div className="mb-3">
-              <label htmlFor="numero_serial" className="form-label">
-                Número Serial
-              </label>
-              <input
-                type="text"
-                id="numero_serial"
-                name="numero_serial"
-                value={form.numero_serial}
-                onChange={handleChange}
-                className="form-control"
-                required
-              />
-            </div>
-
             {/* Nombre */}
             <div className="mb-3">
-              <label htmlFor="nombre" className="form-label">
-                Nombre
-              </label>
+              <label className="form-label">Nombre</label>
               <input
                 type="text"
-                id="nombre"
                 name="nombre"
                 value={form.nombre}
                 onChange={handleChange}
@@ -154,11 +151,8 @@ export default function AñadirProducto() {
 
             {/* Descripción */}
             <div className="mb-3">
-              <label htmlFor="descripcion" className="form-label">
-                Descripción
-              </label>
+              <label className="form-label">Descripción</label>
               <textarea
-                id="descripcion"
                 name="descripcion"
                 value={form.descripcion}
                 onChange={handleChange}
@@ -168,48 +162,48 @@ export default function AñadirProducto() {
               />
             </div>
 
-            {/* Precio */}
-            <div className="mb-3">
-              <label htmlFor="precio" className="form-label">
-                Precio
-              </label>
-              <input
-                type="number"
-                id="precio"
-                name="precio"
-                value={form.precio}
-                onChange={handleChange}
-                className="form-control"
-                min="0"
-                step="0.01"
-                required
-              />
+            {/* Precio y Stock */}
+            <div className="row">
+              <div className="mb-3 col-md-6">
+                <label className="form-label">Precio</label>
+                <input
+                  type="number"
+                  name="precio"
+                  value={form.precio}
+                  onChange={handleChange}
+                  className="form-control"
+                  step="0.01"
+                  required
+                />
+              </div>
+              <div className="mb-3 col-md-6">
+                <label className="form-label">Stock</label>
+                <input
+                  type="number"
+                  name="stock"
+                  value={form.stock}
+                  onChange={handleChange}
+                  className="form-control"
+                  required
+                />
+              </div>
             </div>
 
-            {/* Stock */}
+            {/* Fecha Creación (solo visual) */}
             <div className="mb-3">
-              <label htmlFor="stock" className="form-label">
-                Stock
-              </label>
+              <label className="form-label">Fecha de Creación</label>
               <input
-                type="number"
-                id="stock"
-                name="stock"
-                value={form.stock}
-                onChange={handleChange}
+                type="text"
+                value={form.fecha_creacion}
+                readOnly
                 className="form-control"
-                min="0"
-                required
               />
             </div>
 
             {/* Categoría */}
             <div className="mb-3">
-              <label htmlFor="id_categoria" className="form-label">
-                Categoría
-              </label>
+              <label className="form-label">Categoría</label>
               <select
-                id="id_categoria"
                 name="id_categoria"
                 value={form.id_categoria}
                 onChange={handleChange}
@@ -228,16 +222,12 @@ export default function AñadirProducto() {
             {/* Subcategoría */}
             {subcategorias.length > 0 && (
               <div className="mb-3">
-                <label htmlFor="id_subcategoria" className="form-label">
-                  Subcategoría
-                </label>
+                <label className="form-label">Subcategoría</label>
                 <select
-                  id="id_subcategoria"
                   name="id_subcategoria"
                   value={form.id_subcategoria}
                   onChange={handleChange}
                   className="form-select"
-                  required
                 >
                   <option value="">Selecciona subcategoría</option>
                   {subcategorias.map((s) => (
@@ -249,23 +239,7 @@ export default function AñadirProducto() {
               </div>
             )}
 
-            {/* Fecha de Creación */}
-            <div className="mb-3">
-              <label htmlFor="fecha_creacion" className="form-label">
-                Fecha de Creación
-              </label>
-              <input
-                type="date"
-                id="fecha_creacion"
-                name="fecha_creacion"
-                value={form.fecha_creacion}
-                onChange={handleChange}
-                className="form-control"
-                required
-              />
-            </div>
-
-            {/* Subir nueva imagen */}
+            {/* Imagen */}
             <div className="mb-3">
               <label className="form-label">Subir imagen</label>
               <input
@@ -276,7 +250,6 @@ export default function AñadirProducto() {
               />
             </div>
 
-            {/* Seleccionar imagen existente */}
             <div className="mb-3">
               <div className="d-flex flex-wrap gap-2">
                 {imagenesExistentes.map((img) => (
@@ -302,14 +275,14 @@ export default function AñadirProducto() {
             </div>
 
             {/* Vista previa */}
-            {(imagenNueva || imagenSeleccionada) && (
+            {(imagenArchivo || imagenSeleccionada) && (
               <div className="mb-3">
                 <strong>Vista previa:</strong>
                 <div>
                   <img
                     src={
-                      imagenNueva
-                        ? URL.createObjectURL(imagenNueva)
+                      imagenArchivo
+                        ? URL.createObjectURL(imagenArchivo)
                         : `${BASE_URL}/productos/img/${imagenSeleccionada}`
                     }
                     alt="preview"
@@ -325,7 +298,7 @@ export default function AñadirProducto() {
             )}
 
             <button type="submit" className="btn btn-dark w-100">
-              Guardar Producto
+              Guardar Cambios
             </button>
           </form>
         </div>

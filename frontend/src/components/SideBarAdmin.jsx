@@ -25,7 +25,7 @@ export default function SidebarAdmin() {
             <a className="nav-link text-white" href="/admin-subcategorias">Subcategorías</a>
           </li>
           <li>
-            <a className="nav-link text-white" href="#">Productos</a>
+            <a className="nav-link text-white" href="/admin-productos">Productos</a>
           </li>
           <li>
             <a className="nav-link text-white" href="#">Descuentos</a>
@@ -46,7 +46,7 @@ export default function SidebarAdmin() {
             </a>
             <ul className="collapse ps-3" id="configMenu">
               <li><a className="nav-link text-white" href="#">Clientes</a></li>
-              <li><a className="nav-link text-white" href="#">Salir</a></li>
+              <li><a className="nav-link text-white" href="/">Salir</a></li>
             </ul>
           </li>
         </ul>

@@ -155,16 +155,12 @@ export default function CategoriasAdmin() {
     }
   };
 
-  return (
-    <>
-      {/* Sidebar fijo */}
+return (
+  <>
+    <div className="d-flex">
       <SidebarAdmin />
 
-      {/* Contenido principal con margen para que no quede debajo del sidebar */}
-      <main
-        className="main-content p-4"
-        style={{ marginLeft: "280px" }} // Ajusta según el ancho de tu sidebar
-      >
+      <main className="flex-grow-1 p-4" style={{ marginLeft: "280px" }}>
         {/* Botón menú móvil para abrir sidebar */}
         <button
           className="btn btn-dark d-md-none mb-3"
@@ -189,7 +185,7 @@ export default function CategoriasAdmin() {
               required
             />
           </div>
-          <div className="col-md-6">
+          <div className="col-md-4">
             <input
               type="text"
               name="descripcion"
@@ -223,82 +219,86 @@ export default function CategoriasAdmin() {
                 <td>{categoria.nombre_categoria}</td>
                 <td>{categoria.descripcion_categoria}</td>
                 <td>
-                  <div className="d-flex">
-                    <button
-                      className="btn btn-success me-2"
-                      onClick={() => abrirEditarModal(categoria)}
-                    >
-                      Editar
-                    </button>
-                    <button
-                      className="btn btn-danger"
-                      onClick={() => eliminarCategoria(categoria.id_categoria)}
-                    >
-                      Eliminar
-                    </button>
-                  </div>
+                  <button
+                    className="btn btn-success me-2"
+                    onClick={() => abrirEditarModal(categoria)}
+                  >
+                    Editar
+                  </button>
+                  <button
+                    className="btn btn-danger"
+                    onClick={() => eliminarCategoria(categoria.id_categoria)}
+                  >
+                    Eliminar
+                  </button>
                 </td>
               </tr>
             ))}
           </tbody>
         </table>
       </main>
+    </div>
 
-      {/* Modal para editar */}
-      <div
-        className={`modal fade ${showEditModal ? "show d-block" : ""}`}
-        tabIndex="-1"
-        role="dialog"
-        style={{ backgroundColor: showEditModal ? "rgba(0,0,0,0.5)" : "transparent" }}
-        onClick={() => setShowEditModal(false)}
-      >
-        <div className="modal-dialog" role="document" onClick={(e) => e.stopPropagation()}>
-          <div className="modal-content">
-            <form onSubmit={guardarEdicion}>
-              <div className="modal-header">
-                <h5 className="modal-title">Editar Categoría</h5>
-                <button
-                  type="button"
-                  className="btn-close"
-                  onClick={() => setShowEditModal(false)}
-                ></button>
+    {/* Modal para editar */}
+    <div
+      className={`modal fade ${showEditModal ? "show d-block" : ""}`}
+      tabIndex="-1"
+      role="dialog"
+      style={{ backgroundColor: showEditModal ? "rgba(0,0,0,0.5)" : "transparent" }}
+      onClick={() => setShowEditModal(false)}
+    >
+      <div className="modal-dialog" role="document" onClick={(e) => e.stopPropagation()}>
+        <div className="modal-content">
+          <form onSubmit={guardarEdicion}>
+            <div className="modal-header">
+              <h5 className="modal-title">Editar Categoría</h5>
+              <button
+                type="button"
+                className="btn-close"
+                onClick={() => setShowEditModal(false)}
+              ></button>
+            </div>
+            <div className="modal-body">
+              <div className="mb-3">
+                <label className="form-label">Nombre</label>
+                <input
+                  type="text"
+                  name="nombre"
+                  className="form-control"
+                  value={editForm.nombre}
+                  onChange={handleEditChange}
+                  required
+                />
               </div>
-              <div className="modal-body">
-                <div className="mb-3">
-                  <label className="form-label">Nombre</label>
-                  <input
-                    type="text"
-                    name="nombre"
-                    className="form-control"
-                    value={editForm.nombre}
-                    onChange={handleEditChange}
-                    required
-                  />
-                </div>
-                <div className="mb-3">
-                  <label className="form-label">Descripción</label>
-                  <input
-                    type="text"
-                    name="descripcion"
-                    className="form-control"
-                    value={editForm.descripcion}
-                    onChange={handleEditChange}
-                    required
-                  />
-                </div>
+              <div className="mb-3">
+                <label className="form-label">Descripción</label>
+                <input
+                  type="text"
+                  name="descripcion"
+                  className="form-control"
+                  value={editForm.descripcion}
+                  onChange={handleEditChange}
+                  required
+                />
               </div>
-              <div className="modal-footer">
-                <button type="button" className="btn btn-secondary" onClick={() => setShowEditModal(false)}>
-                  Cancelar
-                </button>
-                <button type="submit" className="btn btn-primary">
-                  Guardar Cambios
-                </button>
-              </div>
-            </form>
-          </div>
+            </div>
+            <div className="modal-footer">
+              <button
+                type="button"
+                className="btn btn-secondary"
+                onClick={() => setShowEditModal(false)}
+              >
+                Cancelar
+              </button>
+              <button type="submit" className="btn btn-primary">
+                Guardar Cambios
+              </button>
+            </div>
+          </form>
         </div>
       </div>
-    </>
-  );
+    </div>
+  </>
+);
+
 }

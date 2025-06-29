@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faShoppingCart } from '@fortawesome/free-solid-svg-icons';
 import Carrito from '../../components/cliente/carrito';
 import ModalConfirmacion from '../../components/cliente/ModalConfirmacion';
 import '../../Styles/CarritoPage.css';
@@ -17,7 +19,10 @@ export default function CarritoPage() {
         <div className="col-lg-15">
           <div className="card shadow-lg border-0">
             <div className="card-header bg-dark text-white text-center">
-              <h2 className="mb-0">🛒 Mi Carrito</h2>
+              <h2 className="mb-0">
+                <FontAwesomeIcon icon={faShoppingCart} className="me-2" />
+                Mi Carrito
+              </h2>
             </div>
             <div className="card-body bg-light">
               <Carrito id_usuario={id_usuario} />

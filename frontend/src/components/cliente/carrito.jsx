@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ProductoDetalle from './ProductoDetalle'; // Asegúrate de importar el componente
 import ModalConfirmacion from './ModalConfirmacion'; // Ajusta la ruta si es necesario
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faShoppingCart, faLightbulb } from '@fortawesome/free-solid-svg-icons';
 
 export default function Carrito() {
   const [carrito, setCarrito] = useState([]);
@@ -135,83 +137,89 @@ export default function Carrito() {
   }
 
   return (
-  <div className="container py-4">
-    {/* Caja 1: Carrito de compras + resumen */}
-    <div className="row gx-4">
-      {/* Productos en carrito */}
-      <div className="col-lg-8 mb-4">
-        <div className="card shadow-sm">
-          <div className="card-header bg-white border-bottom">
-            <h5 className="mb-0">🛒 Carrito de compras</h5>
+    <div className="container py-4">
+      {/* Caja 1: Carrito de compras + resumen */}
+      <div className="row gx-4">
+        {/* Productos en carrito */}
+        <div className="col-lg-8 mb-4">
+          <div className="card shadow-sm">
+            <div className="card-header bg-white border-bottom">
+              <h5 className="mb-0">
+                <FontAwesomeIcon icon={faShoppingCart} className="me-2" />
+                Carrito de compras
+              </h5>
+            </div>
+            <div className="card-body">
+              {carrito.length === 0 ? (
+                <p>El carrito está vacío.</p>
+              ) : (
+                <ul className="list-group list-group-flush">
+                  {carrito.map(item => (
+                    <li key={item.id_carrito} className="list-group-item d-flex justify-content-between align-items-center">
+                      <span><strong>{item.nombre}</strong> x {item.cantidad}</span>
+                      <button onClick={() => eliminarProducto(item.id_carrito)} className="btn btn-sm btn-outline-danger">×</button>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
           </div>
-          <div className="card-body">
-            {carrito.length === 0 ? (
-              <p>El carrito está vacío.</p>
+        </div>
+
+        {/* Resumen de compra */}
+        <div className="col-lg-4 mb-4">
+          <div className="card shadow-sm">
+            <div className="card-body">
+              <h5 className="card-title">Resumen de compra</h5>
+              <p>Productos: <strong>${calcularTotal()}</strong></p>
+              <p>Envío: <span className="text-success">Gratis</span></p>
+              <hr />
+              <h5>Total: <strong>${calcularTotal()}</strong></h5>
+              <button className="btn btn-primary w-100 mt-3" onClick={comprar}>Continuar compra</button>
+              <button className="btn btn-secondary w-100 mt-2" onClick={volver}>Volver</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Caja 2: Recomendaciones */}
+      <div className="card shadow-sm mt-5">
+        <div className="card-body">
+          <h5 className="mb-4">
+            <FontAwesomeIcon icon={faLightbulb} className="me-2 text-warning" />
+            Recomendaciones para ti
+          </h5>
+          <div className="row">
+            {recomendados.length > 0 ? (
+              recomendados.map(producto => (
+                <div className="col-md-3 mb-4" key={producto.id_producto}>
+                  <div className="card h-100 border-light shadow-sm">
+                    <img
+                      src={`/img/${producto.imagen}`}
+                      className="card-img-top"
+                      alt={producto.nombre}
+                      style={{ height: '150px', objectFit: 'contain' }}
+                    />
+                    <div className="card-body text-center">
+                      <h6 className="card-title">{producto.nombre}</h6>
+                      <p className="text-muted">${producto.precio.toLocaleString('es-CO')}</p>
+                      <button
+                        className="btn btn-outline-primary btn-sm"
+                        onClick={() => setProductoSeleccionado(producto)}
+                      >
+                        Ver producto
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))
             ) : (
-              <ul className="list-group list-group-flush">
-                {carrito.map(item => (
-                  <li key={item.id_carrito} className="list-group-item d-flex justify-content-between align-items-center">
-                    <span><strong>{item.nombre}</strong> x {item.cantidad}</span>
-                    <button onClick={() => eliminarProducto(item.id_carrito)} className="btn btn-sm btn-outline-danger">×</button>
-                  </li>
-                ))}
-              </ul>
+              <p className="text-muted">No hay productos recomendados.</p>
             )}
           </div>
         </div>
       </div>
 
-      {/* Resumen de compra */}
-      <div className="col-lg-4 mb-4">
-        <div className="card shadow-sm">
-          <div className="card-body">
-            <h5 className="card-title">Resumen de compra</h5>
-            <p>Productos: <strong>${calcularTotal()}</strong></p>
-            <p>Envío: <span className="text-success">Gratis</span></p>
-            <hr />
-            <h5>Total: <strong>${calcularTotal()}</strong></h5>
-            <button className="btn btn-primary w-100 mt-3" onClick={comprar}>Continuar compra</button>
-            <button className="btn btn-secondary w-100 mt-2" onClick={volver}>Volver</button>
-          </div>
-        </div>
-      </div>
     </div>
-
-    {/* Caja 2: Recomendaciones */}
-    <div className="card shadow-sm mt-5">
-      <div className="card-body">
-        <h5 className="mb-4">🧠 Recomendaciones para ti</h5>
-        <div className="row">
-          {recomendados.length > 0 ? (
-            recomendados.map(producto => (
-              <div className="col-md-3 mb-4" key={producto.id_producto}>
-                <div className="card h-100 border-light shadow-sm">
-                  <img
-                    src={`/img/${producto.imagen}`}
-                    className="card-img-top"
-                    alt={producto.nombre}
-                    style={{ height: '150px', objectFit: 'contain' }}
-                  />
-                  <div className="card-body text-center">
-                    <h6 className="card-title">{producto.nombre}</h6>
-                    <p className="text-muted">${producto.precio.toLocaleString('es-CO')}</p>
-                    <button
-                      className="btn btn-outline-primary btn-sm"
-                      onClick={() => setProductoSeleccionado(producto)}
-                    >
-                      Ver producto
-                    </button>
-                  </div>
-                </div>
-              </div>
-            ))
-          ) : (
-            <p className="text-muted">No hay productos recomendados.</p>
-          )}
-        </div>
-      </div>
-    </div>
-
-  </div>
-);
+  );
 }

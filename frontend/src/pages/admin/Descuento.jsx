@@ -49,7 +49,7 @@ export default function DescuentosAdmin() {
     if (!confirm.isConfirmed) return;
 
     try {
-      await axios.post(`http://localhost:3001/api/descuentos/eliminar/${id}`);
+      await axios.delete(`http://localhost:3001/api/descuentos/${id}`);
       Swal.fire("Eliminado", "El descuento ha sido eliminado.", "success");
       if ($.fn.DataTable.isDataTable("#tablaDescuentos")) {
         $("#tablaDescuentos").DataTable().destroy();
@@ -72,7 +72,7 @@ export default function DescuentosAdmin() {
       <main className="main-content px-4" style={{ marginLeft: "280px" }}>
         <div className="d-flex justify-content-between align-items-center my-4">
           <h1 className="mb-0">Gestión de Descuentos</h1>
-          <a href="/formulario-descuento" className="btn btn-dark">
+          <a href="/agregar-descuento" className="btn btn-dark">
             Añadir Descuento
           </a>
         </div>
@@ -93,41 +93,42 @@ export default function DescuentosAdmin() {
               </tr>
             </thead>
             <tbody>
-              {descuentos.map((d) => (
-                <tr key={d.id_descuento}>
-                  <td>{d.id_descuento}</td>
-                  <td>{d.tipo_descuento}</td>
-                  <td>{d.valor}</td>
-                  <td>{d.fecha_inicio}</td>
-                  <td>{d.fecha_fin}</td>
-                  <td>{d.estado_descuento}</td>
-                  <td>{d.aplicacion}</td>
-                  <td>
-                    {d.aplicacion === "producto"
-                      ? d.nombre_producto
-                      : d.aplicacion === "categoria"
-                      ? d.nombre_categoria
-                      : "Todos"}
-                  </td>
-                  <td>
-                    <div className="d-flex gap-2">
-                      <a
-                        href={`/editar-descuento/${d.id_descuento}`}
-                        className="btn btn-success btn-sm"
-                      >
-                        Editar
-                      </a>
-                      <button
-                        className="btn btn-danger btn-sm"
-                        onClick={() => eliminarDescuento(d.id_descuento)}
-                      >
-                        Eliminar
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
+  {descuentos.map((d) => (
+    <tr key={d.id_descuento}>
+      <td>{d.id_descuento}</td>
+      <td>{d.tipo_descuento}</td>
+      <td>{d.valor}</td>
+      <td>{d.fecha_inicio?.split("T")[0]}</td>
+      <td>{d.fecha_fin?.split("T")[0]}</td>
+      <td>{d.estado_descuento}</td>
+      <td>{d.aplicacion}</td>
+      <td>
+        {d.aplicacion === "producto"
+          ? d.nombre_producto
+          : d.aplicacion === "categoria"
+          ? d.nombre_categoria
+          : "Todos"}
+      </td>
+      <td>
+        <div className="d-flex gap-2">
+          <a
+            href={`/editar-descuento/${d.id_descuento}`}
+            className="btn btn-success btn-sm"
+          >
+            Editar
+          </a>
+          <button
+            className="btn btn-danger btn-sm"
+            onClick={() => eliminarDescuento(d.id_descuento)}
+          >
+            Eliminar
+          </button>
+        </div>
+      </td>
+    </tr>
+  ))}
+</tbody>
+
           </table>
         </div>
       </main>

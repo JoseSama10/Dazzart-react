@@ -4,8 +4,9 @@ const cors = require('cors');
 
 const userRoutes = require('./routes/userRouter')
 const descuentoRoutes = require('./routes/descuentoRouter');
-
-
+const productosRouter = require('./routes/productosRouter');
+const categoriasRouter = require('./routes/categoriasrouter');
+const subcategoriasRouter = require('./routes/subcategoriasrouter');
 
 const createApp = () => {
   const app = express();
@@ -30,9 +31,11 @@ const createApp = () => {
   app.get('/', (req, res) => {
     res.send('Bienvenido a la API de DAZZART');
   });
+  app.use('/productos', productosRouter);
   app.use('/api/usuarios', userRoutes);
   app.use('/api/descuentos', descuentoRoutes); 
-
+  app.use('/categorias', categoriasRouter);
+  app.use('/subcategorias', subcategoriasRouter);
 
   return app;
 };

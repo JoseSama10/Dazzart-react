@@ -21,32 +21,28 @@ Dazzart Components es un sistema integral de gestión para la venta y control de
 📃 Licencia
 
 🧠 Descripción General
-DAZZART COMPONENTS Es un Ecommerce orientado a facilitarle la compra de productos tecnológicos a personas de Bogotá, que estén interesados en adquirir productos tecnologicos, mediante funciones como:
+Dazzart Components es un ecommerce orientado a facilitar la compra de productos tecnológicos a personas en Bogotá y alrededores, con un catálogo extenso y actualizado de periféricos y componentes de computadoras. Entre sus funcionalidades destacan:
 
 Control de ventas, pedidos y clientes
 
 Registro detallado de productos y categorías
 
-Gestión de inventario y carro de compras
+Gestión de inventario y carrito de compras
 
 Reportes dinámicos en formatos PDF
 
 Interfaz amigable con múltiples niveles de acceso
 
 🎯 Objetivos
-Llevar un control de productos que indique la cantidad en  stock
+Llevar un control preciso de productos indicando la cantidad en stock
 
-Registrar las características de los productos ofrecidos por la empresa.
+Registrar las características detalladas de los productos ofrecidos
 
-Facilitar el proceso de venta de productos ofrecidos por la empresa. 
+Facilitar el proceso de venta de productos mediante un sistema seguro
 
-Diseñar un sistema seguro con módulo de compras.
-
-Diseñar un ecommerce  para ofrecer el extenso catálogo de productos de distintas marcas adquiridos por la empresa para su venta al público.
-
+Diseñar un ecommerce funcional para exhibir el catálogo de distintas marcas
 
 📦 Funcionalidades Principales
-
 ✅ Autenticación segura y gestión de sesiones
 
 👥 Administración de usuarios por roles (administrador, cliente)
@@ -57,15 +53,11 @@ Diseñar un ecommerce  para ofrecer el extenso catálogo de productos de distint
 
 🔍 Seguimiento y administración de compras
 
-
 🧑‍💻 Roles de Usuario
 Rol	Acciones principales
-
-Administrador	Gestión total: crea, edita y elimina usuarios, productos, categorias, subcategorias, actualizacion de estado de pedidos.
-
-Cliente	Navega catálogo, realiza pedidos y consulta estado
-
-User Vista de Catalogo
+Administrador	Gestión total: crea, edita y elimina usuarios, productos, categorías, subcategorías y estado de pedidos
+Cliente	Navega catálogo, realiza pedidos y consulta el estado de sus compras
+Usuario	Vista pública para navegar catálogo
 
 ⚙️ Tecnologías Usadas
 Frontend: React, HTML5, CSS3, JavaScript, Bootstrap
@@ -74,11 +66,11 @@ Backend: Node.js, Express
 
 Base de Datos: MySQL
 
-Otros: Multer para gestión de imágenes, JWT para autenticación
+Otros: Multer (gestión de imágenes), JWT (autenticación)
 
 Hosting: Servidor propio o en la nube (AWS, DigitalOcean, etc.)
 
-Compatibilidad: Windows, macOS, Android, iOS (responsivo)
+Compatibilidad: Windows, macOS, Android, iOS (diseño responsivo)
 
 🛠️ Instalación
 bash
@@ -91,7 +83,7 @@ cd dazzart-components
 # Backend
 cd backend
 npm install
-# Configurar variables de entorno en .env (revisar .env.example)
+# Configurar variables de entorno en .env (ver archivo .env.example)
 npm run dev
 
 # Frontend
@@ -116,6 +108,5 @@ Jose David Daza Camacho – Análisis, Diseño, Desarrollo Frontend y Backend
 
 Jose David Zabaleta – Análisis, Diseño, Desarrollo Frontend y Backend
 
-
 📃 Licencia
-Este proyecto es propiedad intelectual de los autores mencionados. Para uso educativo o comercial, contactar previamente a los desarrolladores.
+Este proyecto es propiedad intelectual de los autores mencionados. Para usos educativos o comerciales, contactar previamente a los desarrolladores.

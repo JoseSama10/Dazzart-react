@@ -108,3 +108,6 @@ John Michael Vasquez Prada – Análisis, Diseño, Desarrollo Frontend y Backend
 Jose David Daza Camacho – Análisis, Diseño, Desarrollo Frontend y Backend
 
 Jose David Zabaleta – Análisis, Diseño, Desarrollo Frontend y Backend
+
+## 📃 Licencia
+Este proyecto es propiedad intelectual de los autores mencionados. Para usos educativos o comerciales, contactar previamente a los desarrolladores.

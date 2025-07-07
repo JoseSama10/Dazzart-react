@@ -1,6 +1,6 @@
 # 🖥️ Dazzart Components
 
-Dazzart Components es un sistema integral de gestión para la venta y control de periféricos y componentes internos de computadoras, diseñado para optimizar inventarios, ventas, compras y gestión de clientes con reportes en tiempo real y una interfaz moderna y funcional.
+Ecommerce para la venta de productos el cual beneficiara a clientes ofreciendoles disponibilidad operativa las 24 horas del día y la posibilidad de comprar en distintas partes de la ciudad, por otra parte  ayudará a gestionar distintos procesos de la empresa dentro de los que se encuentra la gestión de productos como lo es clasificarlos por categorías y subcategorías, el control de la entradas y salidas, reportes de productos vendidos, entre otros procesos importantes de la empresa.
 
 ---
 
@@ -74,7 +74,7 @@ Dazzart Components es un ecommerce orientado a facilitar la compra de productos 
 
 ```bash
 # Clonar el repositorio
-git clone https://github.com/tuusuario/dazzart-components.git
+git clone https://github.com/JoseSama10/Dazzart-react.git
 cd dazzart-components
 
 # Backend

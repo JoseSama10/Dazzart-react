@@ -87,7 +87,11 @@ npm run dev
 cd ../frontend
 npm install
 npm run dev
-📈 Requisitos
+
+---
+```
+
+##📈 Requisitos
 ✅ Memoria RAM mínima: 8 GB (16 GB recomendado)
 
 ✅ Procesador: Intel i5 / AMD Ryzen 5 o superior
@@ -98,12 +102,9 @@ npm run dev
 
 ✅ Node.js v16+
 
-🧑‍🤝‍🧑 Autores
+##🧑‍🤝‍🧑 Autores
 John Michael Vasquez Prada – Análisis, Diseño, Desarrollo Frontend y Backend
 
 Jose David Daza Camacho – Análisis, Diseño, Desarrollo Frontend y Backend
 
 Jose David Zabaleta – Análisis, Diseño, Desarrollo Frontend y Backend
-
-📃 Licencia
-Este proyecto es propiedad intelectual de los autores mencionados. Para usos educativos o comerciales, contactar previamente a los desarrolladores.

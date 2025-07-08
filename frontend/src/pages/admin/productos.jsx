@@ -92,7 +92,7 @@ export default function ProductosAdmin() {
     if (!confirm.isConfirmed) return;
 
     try {
-      const response = await axios.delete(`${BASE_URL}/productos/eliminar/${id}`);
+      const response = await axios.delete(`${BASE_URL}/api/productos/eliminar/${id}`);
       if (response.status === 200) {
         // Destruye DataTable para evitar duplicados
         if ($.fn.DataTable.isDataTable("#tablaProductos")) {

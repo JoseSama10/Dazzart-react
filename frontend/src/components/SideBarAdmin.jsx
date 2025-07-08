@@ -1,6 +1,11 @@
-import React from "react";
+import React, { useState } from "react";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faFolder, faFolderTree, faBox, faPercent, faTruck, faGear, faUser, faRightFromBracket, faChartLine } from '@fortawesome/free-solid-svg-icons';
 
 export default function SidebarAdmin() {
+  const [openConfig, setOpenConfig] = useState(false);
+  const [openConfigMobile, setOpenConfigMobile] = useState(false);
+
   return (
     <>
       {/* Sidebar para escritorio */}
@@ -8,7 +13,7 @@ export default function SidebarAdmin() {
         className="sidebar d-none d-md-block bg-dark text-white p-3"
         style={{
           height: "100vh",
-          width: "280px", // <-- Aumentado desde 220px
+          width: "280px",
           position: "fixed",
           top: 0,
           left: 0,
@@ -16,38 +21,66 @@ export default function SidebarAdmin() {
           zIndex: 1040,
         }}
       >
-        <h5 className="">Dazzart Components</h5>
-        <ul className="nav flex-column mt-3">
+        <h5 className="fw-bold mb-4" style={{letterSpacing:'1px', fontSize:'1.2rem'}}>Dazzart Admin</h5>
+          <ul className="nav flex-column mt-3">
+  <li>
+    <a className="nav-link text-white d-flex align-items-center gap-2" href="/admin-estadisticas">
+      <FontAwesomeIcon icon={faChartLine} /> Estadísticas
+    </a>
+  </li>
           <li>
-            <a className="nav-link text-white" href="/admin-categorias">Categorías</a>
-          </li>
-          <li>
-            <a className="nav-link text-white" href="/admin-subcategorias">Subcategorías</a>
-          </li>
-          <li>
-            <a className="nav-link text-white" href="/admin-productos">Productos</a>
-          </li>
-          <li>
-            <a className="nav-link text-white" href="#">Descuentos</a>
-          </li>
-          <li>
-            <a className="nav-link text-white" href="#">Pedidos</a>
-          </li>
-          <li>
-            <a
-              className="nav-link text-white"
-              data-bs-toggle="collapse"
-              href="#configMenu"
-              role="button"
-              aria-expanded="false"
-              aria-controls="configMenu"
-            >
-              Configuración
+            <a className="nav-link text-white d-flex align-items-center gap-2" href="/admin-categorias">
+              <FontAwesomeIcon icon={faFolder} /> Categorías
             </a>
-            <ul className="collapse ps-3" id="configMenu">
-              <li><a className="nav-link text-white" href="#">Clientes</a></li>
-              <li><a className="nav-link text-white" href="/">Salir</a></li>
-            </ul>
+          </li>
+
+          <li>
+            <a className="nav-link text-white d-flex align-items-center gap-2" href="/admin-subcategorias">
+              <FontAwesomeIcon icon={faFolderTree} /> Subcategorías
+            </a>
+          </li>
+
+          <li>
+            <a className="nav-link text-white d-flex align-items-center gap-2" href="/admin-productos">
+              <FontAwesomeIcon icon={faBox} /> Productos
+            </a>
+          </li>
+          <li>
+            <a className="nav-link text-white d-flex align-items-center gap-2" href="/admin-descuento">
+              <FontAwesomeIcon icon={faPercent} /> Descuentos
+            </a>
+          </li>
+          <li>
+            <a className="nav-link text-white d-flex align-items-center gap-2" href="/admin-pedidos">
+              <FontAwesomeIcon icon={faTruck} /> Pedidos
+            </a>
+          </li>
+          <li>
+            <button
+              className="nav-link text-white d-flex align-items-center gap-2 btn btn-link p-0"
+              style={{fontWeight:'500'}}
+              onClick={() => setOpenConfig(!openConfig)}
+            >
+              <FontAwesomeIcon icon={faGear} /> Configuración {openConfig ? "▾" : "▸"}
+            </button>
+            {openConfig && (
+              <ul className="ps-3 mt-2">
+                <li><a className="nav-link text-white d-flex align-items-center gap-2" href="/admin-usuarios"><FontAwesomeIcon icon={faUser} /> Clientes</a></li>
+                <li>
+                  <button
+                    className="nav-link text-white d-flex align-items-center gap-2 btn btn-link p-0"
+                    onClick={() => {
+                      localStorage.removeItem('usuario');
+                      localStorage.clear();
+                      sessionStorage.clear();
+                      window.location.replace('/'); // replace para limpiar historial
+                    }}
+                  >
+                    <FontAwesomeIcon icon={faRightFromBracket} /> Salir
+                  </button>
+                </li>
+              </ul>
+            )}
           </li>
         </ul>
       </div>
@@ -76,26 +109,39 @@ export default function SidebarAdmin() {
         </div>
         <div className="offcanvas-body">
           <ul className="nav flex-column">
-            <li><a className="nav-link text-white" href="/admin-categorias">Categorías</a></li>
-            <li><a className="nav-link text-white" href="/admin-subcategorias">Subcategorías</a></li>
-            <li><a className="nav-link text-white" href="#">Productos</a></li>
-            <li><a className="nav-link text-white" href="#">Pedidos</a></li>
-            <li><a className="nav-link text-white" href="#">Descuentos</a></li>
             <li>
-              <a
-                className="nav-link text-white"
-                data-bs-toggle="collapse"
-                href="#configMenuMobile"
-                role="button"
-                aria-expanded="false"
-                aria-controls="configMenuMobile"
+             <a className="nav-link text-white d-flex align-items-center gap-2" href="/admin-estadisticas"><FontAwesomeIcon icon={faChartLine} /> Estadísticas</a></li>
+            <li><a className="nav-link text-white d-flex align-items-center gap-2" href="/admin-categorias"><FontAwesomeIcon icon={faFolder} /> Categorías</a></li>
+            <li><a className="nav-link text-white d-flex align-items-center gap-2" href="/admin-subcategorias"><FontAwesomeIcon icon={faFolderTree} /> Subcategorías</a></li>
+            <li><a className="nav-link text-white d-flex align-items-center gap-2" href="/admin-productos"><FontAwesomeIcon icon={faBox} /> Productos</a></li>
+            <li><a className="nav-link text-white d-flex align-items-center gap-2" href="/admin-pedidos"><FontAwesomeIcon icon={faTruck} /> Pedidos</a></li>
+            <li><a className="nav-link text-white d-flex align-items-center gap-2" href="/admin-descuento"><FontAwesomeIcon icon={faPercent} /> Descuentos</a></li>
+            <li>
+              <button
+                className="nav-link text-white d-flex align-items-center gap-2 btn btn-link p-0"
+                style={{fontWeight:'500'}}
+                onClick={() => setOpenConfigMobile(!openConfigMobile)}
               >
-                Configuración
-              </a>
-              <ul className="collapse ps-3" id="configMenuMobile">
-                <li><a className="nav-link text-white" href="#">Clientes</a></li>
-                <li><a className="nav-link text-white" href="#">Salir</a></li>
-              </ul>
+                <FontAwesomeIcon icon={faGear} /> Configuración {openConfigMobile ? "▾" : "▸"}
+              </button>
+              {openConfigMobile && (
+                <ul className="ps-3 mt-2">
+                  <li><a className="nav-link text-white d-flex align-items-center gap-2" href="/admin-usuarios"><FontAwesomeIcon icon={faUser} /> Clientes</a></li>
+                  <li>
+                    <button
+                      className="nav-link text-white d-flex align-items-center gap-2 btn btn-link p-0"
+                      onClick={() => {
+                        localStorage.removeItem('usuario');
+                        localStorage.clear();
+                        sessionStorage.clear();
+                        window.location.replace('/'); // replace para limpiar historial
+                      }}
+                    >
+                      <FontAwesomeIcon icon={faRightFromBracket} /> Salir
+                    </button>
+                  </li>
+                </ul>
+              )}
             </li>
           </ul>
         </div>

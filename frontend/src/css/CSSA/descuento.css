@@ -1,4 +1,10 @@
 
+
+body {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+  }
+
+
   /* Ajuste del contenido principal */
   .main-content {
     margin-left: 250px;

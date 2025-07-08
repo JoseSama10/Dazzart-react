@@ -3,11 +3,19 @@ const mysql = require('mysql2/promise');
 const pool = mysql.createPool({
   host: 'localhost',
   user: 'root',
-  password: 'SENA',
+  password: '12345',
   database: 'dazzart',
-  waitForConnections: true,
-  connectionLimit: 10,
-  queueLimit: 0,
 });
+
+(async () => {
+  try {
+    // Prueba simple para ver si la conexión funciona:
+    const connection = await pool.getConnection();
+    console.log('Conectado a MySQL correctamente.');
+    connection.release();
+  } catch (error) {
+    console.error('Error al conectar a MySQL:', error);
+  }
+})();
 
 module.exports = pool;

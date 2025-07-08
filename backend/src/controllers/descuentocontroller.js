@@ -24,7 +24,7 @@ exports.crearDescuento = async (req, res) => {
 
     let productoId = null;
 
-    // Validaciones si el descuento es por producto
+    // 🚩 Validaciones si el descuento es por producto
     if (aplicacion === 'producto') {
       console.log("🔍 Buscando producto:", nombre_producto);
 
@@ -44,7 +44,7 @@ exports.crearDescuento = async (req, res) => {
       productoId = producto[0].id_producto;
       const categoriaId = producto[0].id_categoria;
 
-      //  Validaciones si el descuento será Activo
+      // ❌ Validaciones si el descuento será Activo
       if (estado_descuento === 'Activo') {
         const [descuentoProductoActivo] = await db.query(
           `SELECT 1 FROM descuento d
@@ -74,7 +74,7 @@ exports.crearDescuento = async (req, res) => {
       }
     }
 
-    // Validaciones si el descuento es por categoría
+    // 🚩 Validaciones si el descuento es por categoría
     if (aplicacion === 'categoria') {
       console.log("🔍 Validando categoría. ID recibida:", id_categoria);
 

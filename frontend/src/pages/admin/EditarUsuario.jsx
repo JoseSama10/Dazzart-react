@@ -5,11 +5,17 @@ import { useNavigate, useParams } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '../../css/CSSA/actualizarusuario.css';
 
-import SidebarAdmin from '../../components/SidebarAdmin';
+import SidebarAdmin from '../../components/SideBarAdmin.jsx';
 
 export default function EditarUsuario() {
   const { id } = useParams(); // Asegúrate que en App.jsx tienes la ruta como /editar-usuario/:id
   const navigate = useNavigate();
+  useEffect(() => {
+    const usuario = JSON.parse(localStorage.getItem("usuario"));
+    if (!usuario) {
+      window.location.replace("/");
+    }
+  }, []);
 
   const [formData, setFormData] = useState({
     nombre: '',

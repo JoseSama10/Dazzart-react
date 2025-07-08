@@ -20,11 +20,11 @@ export default function FormularioDescuento() {
   const fechaHoy = new Date().toISOString().split("T")[0]; // YYYY-MM-DD
 
   useEffect(() => {
-    axios.get("http://localhost:3001/productos/listar")
+    axios.get("http://localhost:3001/api/productos/listar")
       .then(res => setProductos(res.data))
       .catch(err => console.error("Error al cargar productos:", err));
 
-    axios.get("http://localhost:3001/categorias/listar")
+    axios.get("http://localhost:3001/api/categorias/listar")
       .then(res => setCategorias(res.data))
       .catch(err => console.error("Error al cargar categorías:", err));
   }, []);

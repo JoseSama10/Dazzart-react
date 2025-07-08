@@ -143,8 +143,14 @@ exports.eliminarUsuario = async (req, res) => {
     await db.query('DELETE FROM usuario WHERE id_usuario = ?', [req.params.id]);
     res.json({ message: 'Usuario eliminado' });
   } catch (error) {
+    if (error.code === 'ER_ROW_IS_REFERENCED_2') {
+      return res.status(409).json({
+        error: 'No se puede eliminar el usuario porque tiene pedidos asociados.'
+      });
+    }
+
     console.error('Error al eliminar usuario:', error);
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ error: 'Error al eliminar el usuario' });
   }
 };
 

@@ -1,14 +1,20 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Swal from 'sweetalert2';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '../../css/CSSA/añadirusuario.css'; // Asegúrate de que el archivo exista y tenga los estilos adecuados
 
-import SidebarAdmin from "../../components/SidebarAdmin";
-import { useNavigate } from 'react-router-dom';
+import SidebarAdmin from "../../components/SideBarAdmin.jsx";
+import { useNavigate } from "react-router-dom";
 
 export default function AgregarUsuario() {
   const navigate = useNavigate();
+  useEffect(() => {
+    const usuario = JSON.parse(localStorage.getItem("usuario"));
+    if (!usuario) {
+      window.location.replace("/");
+    }
+  }, []);
 
   const [formData, setFormData] = useState({
     cedula: '',

@@ -6,10 +6,12 @@ import "datatables.net-bs5";
 import "datatables.net-bs5/css/dataTables.bootstrap5.min.css";
 import "../../css/CSSA/descuento.css";
 import Swal from "sweetalert2";
-import SidebarAdmin from "../../components/SideBarAdmin";
+import SidebarAdmin from "../../components/SideBarAdmin.jsx";
+import { useNavigate } from "react-router-dom";
 
 export default function DescuentosAdmin() {
   const [descuentos, setDescuentos] = useState([]);
+  const navigate = useNavigate();
 
   const cargarDescuentos = async () => {
     try {
@@ -24,7 +26,18 @@ export default function DescuentosAdmin() {
             pageLength: 5,
             lengthMenu: [[5, 10, 20], [5, 10, 20]],
             language: {
-              url: "//cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json"
+              lengthMenu: "Mostrar _MENU_ registros por página",
+              zeroRecords: "No se encontraron resultados",
+              info: "Mostrando página _PAGE_ de _PAGES_",
+              infoEmpty: "No hay registros disponibles",
+              infoFiltered: "(filtrado de _MAX_ registros en total)",
+              search: "Buscar:",
+              paginate: {
+                first: "Primero",
+                last: "Último",
+                next: "Siguiente",
+                previous: "Anterior",
+              },
             }
           });
         }
@@ -62,6 +75,13 @@ export default function DescuentosAdmin() {
   };
 
   useEffect(() => {
+    const usuario = JSON.parse(localStorage.getItem("usuario"));
+    if (!usuario) {
+      window.location.replace("/");
+    }
+  }, []);
+
+  useEffect(() => {
     cargarDescuentos();
   }, []);
 
@@ -69,7 +89,7 @@ export default function DescuentosAdmin() {
     <>
       <SidebarAdmin />
 
-      <main className="main-content px-4" style={{ marginLeft: "280px" }}>
+      <main className="main-content p-4" style={{ marginLeft: "280px" }}>
         <div className="d-flex justify-content-between align-items-center my-4">
           <h1 className="mb-0">Gestión de Descuentos</h1>
           <a href="/agregar-descuento" className="btn btn-dark">

@@ -1,6 +1,6 @@
 const db = require('../config/db');
 
-
+// Crear un nuevo descuento (similar al formulario de Flask) //
 
 exports.crearDescuento = async (req, res) => {
   const {
@@ -17,14 +17,14 @@ exports.crearDescuento = async (req, res) => {
   console.log("📦 Datos del descuento recibidos:", req.body);
 
   try {
-
+    // Validar campos obligatorios
     if (!tipo_descuento || !valor || !fecha_inicio || !fecha_fin || !estado_descuento || !aplicacion) {
       return res.status(400).json({ error: 'Faltan campos obligatorios en el formulario.' });
     }
 
     let productoId = null;
 
-  
+    // Validaciones si el descuento es por producto
     if (aplicacion === 'producto') {
       console.log("🔍 Buscando producto:", nombre_producto);
 
@@ -44,6 +44,7 @@ exports.crearDescuento = async (req, res) => {
       productoId = producto[0].id_producto;
       const categoriaId = producto[0].id_categoria;
 
+      //  Validaciones si el descuento será Activo
       if (estado_descuento === 'Activo') {
         const [descuentoProductoActivo] = await db.query(
           `SELECT 1 FROM descuento d
@@ -73,7 +74,7 @@ exports.crearDescuento = async (req, res) => {
       }
     }
 
-   
+    // Validaciones si el descuento es por categoría
     if (aplicacion === 'categoria') {
       console.log("🔍 Validando categoría. ID recibida:", id_categoria);
 
@@ -95,7 +96,7 @@ exports.crearDescuento = async (req, res) => {
       }
     }
 
-    
+    // ✅ Insertar descuento principal
     const [result] = await db.query(
       `INSERT INTO descuento (tipo_descuento, valor, fecha_inicio, fecha_fin, estado_descuento, aplicacion)
        VALUES (?, ?, ?, ?, ?, ?)`,
@@ -105,18 +106,19 @@ exports.crearDescuento = async (req, res) => {
     const id_descuento = result.insertId;
     console.log("✅ Descuento insertado con ID:", id_descuento);
 
+    // Insertar en la tabla intermedia
     if (aplicacion === 'producto') {
       await db.query(
         `INSERT INTO descuento_producto (id_descuento, id_producto) VALUES (?, ?)`,
         [id_descuento, productoId]
       );
-      console.log(" Asociado con producto ID:", productoId);
+      console.log("📌 Asociado con producto ID:", productoId);
     } else if (aplicacion === 'categoria') {
       await db.query(
         `INSERT INTO descuento_categoria (id_descuento, id_categoria) VALUES (?, ?)`,
         [id_descuento, id_categoria]
       );
-      console.log(" Asociado con categoría ID:", id_categoria);
+      console.log("📌 Asociado con categoría ID:", id_categoria);
     }
 
     res.status(201).json({ message: 'Descuento creado correctamente.' });

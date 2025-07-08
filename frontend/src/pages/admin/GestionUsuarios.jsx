@@ -7,11 +7,12 @@ import "datatables.net-bs5/css/dataTables.bootstrap5.min.css";
 import "../../css/CSSA/gestionusuarios.css";
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import Swal from 'sweetalert2';
-
+import { useNavigate } from "react-router-dom";
 import SidebarAdmin from "../../components/SideBarAdmin";
 
 export default function UsuariosAdmin() {
   const [usuarios, setUsuarios] = useState([]);
+  const navigate = useNavigate();
 
   const cargarUsuarios = () => {
     axios.get("http://localhost:3001/api/usuarios")
@@ -82,10 +83,21 @@ export default function UsuariosAdmin() {
         cargarUsuarios();
       }
     } catch (error) {
-      console.error(error);
-      Swal.fire('Error', 'No se pudo eliminar el usuario.', 'error');
+      console.error("Error al eliminar usuario:", error);
+      if (error.response && error.response.status === 409) {
+        Swal.fire('Error', error.response.data.error, 'warning'); // mensaje personalizado
+      } else {
+        Swal.fire('Error', 'No se pudo eliminar el usuario.', 'error');
+      }
     }
   };
+
+  useEffect(() => {
+    const usuario = JSON.parse(localStorage.getItem("usuario"));
+    if (!usuario) {
+      window.location.replace("/");
+    }
+  }, []);
 
   useEffect(() => {
     cargarUsuarios();
@@ -101,57 +113,55 @@ export default function UsuariosAdmin() {
           <a href="/agregar-usuarios" className="btn btn-warning text-white">Añadir Administrador</a>
         </div>
 
-        <table className="table table-striped table-hover" id="tablaUsuarios">
-          <thead className="table-dark">
-            <tr>
-              <th>ID</th>
-              <th>Cédula</th>
-              <th>Nombre</th>
-              <th>Nombre de usuario</th>
-              <th>Correo electrónico</th>
-              <th>Celular</th>
-              <th>Dirección</th>
-              <th>Contraseña</th>
-              <th>Rol</th>
-              <th>Acciones</th>
-            </tr>
-          </thead>
-          <tbody>
-            {usuarios.map(usuario => (
-              <tr key={usuario.id_usuario}>
-                <td>{usuario.id_usuario}</td>
-                <td>{usuario.cedula}</td>
-                <td>{usuario.nombre}</td>
-                <td>{usuario.nombre_usuario}</td>
-                <td>{usuario.correo_electronico}</td>
-                <td>{usuario.telefono}</td>
-                <td>{usuario.direccion}</td>
-                <td>*******</td>
-                <td>{usuario.rol}</td>
-                <td>
-                  <div className="d-flex">
-                    <a
-                      href={`/editar-usuario/${usuario.id_usuario}`}
-                      className="btn btn-success me-2 d-flex align-items-center justify-content-center"
-                      title="Editar"
-                      style={{ width: "50px", height: "40px" }}
-                    >
-                      <img src="/img/edit.png" alt="Editar" style={{ width: "20px", height: "20px" }} />
-                    </a>
-                    <button
-                      onClick={() => eliminarUsuario(usuario.id_usuario)}
-                      className="btn btn-danger d-flex align-items-center justify-content-center"
-                      title="Eliminar"
-                      style={{ width: "50px", height: "40px" }}
-                    >
-                      <img src="/img/delete.png" alt="Eliminar" style={{ width: "20px", height: "20px" }} />
-                    </button>
-                  </div>
-                </td>
+        <div className="table-responsive">
+          <table className="table table-bordered table-striped" id="tablaUsuarios">
+            <thead className="table-dark">
+              <tr>
+                <th>ID</th>
+                <th>Cédula</th>
+                <th>Nombre</th>
+                <th>Nombre de usuario</th>
+                <th>Correo electrónico</th>
+                <th>Celular</th>
+                <th>Dirección</th>
+                <th>Contraseña</th>
+                <th>Rol</th>
+                <th>Acciones</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {usuarios.map(usuario => (
+                <tr key={usuario.id_usuario}>
+                  <td>{usuario.id_usuario}</td>
+                  <td>{usuario.cedula}</td>
+                  <td>{usuario.nombre}</td>
+                  <td>{usuario.nombre_usuario}</td>
+                  <td>{usuario.correo_electronico}</td>
+                  <td>{usuario.telefono}</td>
+                  <td>{usuario.direccion}</td>
+                  <td>*******</td>
+                  <td>{usuario.rol}</td>
+                  <td>
+                    <div className="d-flex gap-2">
+                      <a
+                        href={`/editar-usuario/${usuario.id_usuario}`}
+                        className="btn btn-success btn-sm"
+                      >
+                        Editar
+                      </a>
+                      <button
+                        onClick={() => eliminarUsuario(usuario.id_usuario)}
+                        className="btn btn-danger btn-sm"
+                      >
+                        Eliminar
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </main>
     </>
   );

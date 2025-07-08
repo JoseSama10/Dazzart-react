@@ -3,6 +3,9 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import HeaderRegistro from '../../components/cliente/HeaderRegistro';
 import Footer from '../../components/cliente/Footer';
 import axios from 'axios';
+import '../../css/CSS/Registro.css';
+
+import fondoGif from '../../assets/giphy.gif';
 
 const RegistroDazzart = () => {
   const [formData, setFormData] = useState({
@@ -15,6 +18,65 @@ const RegistroDazzart = () => {
     direccion: ''
   });
 
+  const [errors, setErrors] = useState({});
+
+  const validate = () => {
+    const newErrors = {};
+
+    // Nombre: solo letras y espacios, mínimo 3 caracteres
+    if (!formData.nombre.trim()) {
+      newErrors.nombre = "El nombre es obligatorio";
+    } else if (!/^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]{3,}$/.test(formData.nombre.trim())) {
+      newErrors.nombre = "El nombre solo puede contener letras y espacios (mínimo 3 caracteres)";
+    }
+
+    // Usuario: letras, números, guiones bajos y puntos, 3-15 caracteres
+    if (!formData.usuario.trim()) {
+      newErrors.usuario = "El usuario es obligatorio";
+    } else if (!/^[a-zA-Z0-9._]{3,15}$/.test(formData.usuario.trim())) {
+      newErrors.usuario = "Usuario inválido (3-15 caracteres, letras, números, _ y . permitidos)";
+    }
+
+    // Cédula: solo números, mínimo 6 dígitos
+    if (!formData.cedula.trim()) {
+      newErrors.cedula = "La cédula es obligatoria";
+    } else if (!/^\d{6,}$/.test(formData.cedula.trim())) {
+      newErrors.cedula = "Cédula inválida (mínimo 6 números)";
+    }
+
+    // Email: validación básica email
+    if (!formData.email.trim()) {
+      newErrors.email = "El correo electrónico es obligatorio";
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email.trim())) {
+      newErrors.email = "Correo electrónico inválido";
+    }
+
+    // Contraseña: mínimo 6 caracteres, al menos una letra y un número
+    if (!formData.password) {
+      newErrors.password = "La contraseña es obligatoria";
+    } else if (!/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,}$/.test(formData.password)) {
+      newErrors.password = "La contraseña debe tener al menos 6 caracteres, incluyendo letras y números";
+    }
+
+    // Teléfono: solo números, entre 7 y 15 dígitos
+    if (!formData.telefono.trim()) {
+      newErrors.telefono = "El teléfono es obligatorio";
+    } else if (!/^\d{7,15}$/.test(formData.telefono.trim())) {
+      newErrors.telefono = "Teléfono inválido (7-15 dígitos numéricos)";
+    }
+
+    // Dirección: mínimo 5 caracteres
+    if (!formData.direccion.trim()) {
+      newErrors.direccion = "La dirección es obligatoria";
+    } else if (formData.direccion.trim().length < 5) {
+      newErrors.direccion = "La dirección es muy corta";
+    }
+
+    setErrors(newErrors);
+
+    return Object.keys(newErrors).length === 0;
+  };
+
   const handleChange = (e) => {
     setFormData(prev => ({
       ...prev,
@@ -25,84 +87,152 @@ const RegistroDazzart = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    try {
-      const response = await axios.post('http://localhost:3001/api/usuarios/register', {
-        nombre: formData.nombre,
-        nombre_usuario: formData.usuario,
-        correo_electronico: formData.email,
-        telefono: formData.telefono,
-        contrasena: formData.password,
-        cedula: formData.cedula,
-        direccion: formData.direccion
-      });
+    if (!validate()) return;
 
-      alert(response.data.message || 'Registro exitoso');
-    } catch (error) {
-      console.error('Error al registrar:', error);
-      alert('Error al registrar usuario');
-    }
+try {
+  await axios.post('http://localhost:3001/api/usuarios/register', {
+    nombre: formData.nombre,
+    nombre_usuario: formData.usuario,
+    correo_electronico: formData.email,
+    telefono: formData.telefono,
+    contrasena: formData.password,
+    cedula: formData.cedula,
+    direccion: formData.direccion
+  });
+
+  // alert eliminado
+  window.location.href = '/';
+
+} catch (error) {
+  console.error('Error al registrar:', error);
+  alert('Error al registrar usuario');
+}
+
+  };
+
+  // Botón volver (igual que antes)
+  const handleVolver = () => {
+    window.history.back();
   };
 
   return (
-    <div className="d-flex flex-column min-vh-100 bg-white">
+    <div className="registro-wrapper">
       <HeaderRegistro />
 
-      <main className="flex-grow-1 d-flex">
-        <section className="col-6 bg-light p-0 d-flex">
-          <img
-            src="https://cdn.pixabay.com/photo/2021/12/30/12/09/gaming-computer-6903836_1280.jpg"
-            alt="Computadora moderna"
-            onError={(e) => { e.target.style.display = 'none'; }}
-            style={{
-              width: '100%',
-              height: '100%',
-              objectFit: 'cover',
-              borderRadius: '0.5rem',
-              boxShadow: '0 0 10px rgba(0,0,0,0.2)'
-            }}
-          />
-        </section>
+      <button
+        className="btn btn-secondary btn-volver"
+        onClick={handleVolver}
+        aria-label="Volver"
+      >
+        - Regresar
+      </button>
 
-        <section className="col-6 d-flex align-items-center justify-content-center p-4">
-          <form className="w-100" autoComplete="off" onSubmit={handleSubmit}>
-            <h1 className="h3 mb-4 text-center">Regístrate</h1>
+      <img src={fondoGif} alt="Fondo animado" className="bg-gif" />
+      <div className="overlay"></div>
 
-            <div className="mb-3">
-              <label htmlFor="nombre" className="form-label">Nombre completo</label>
-              <input type="text" id="nombre" name="nombre" className="form-control" required value={formData.nombre} onChange={handleChange} />
-            </div>
-            <div className="mb-3">
-              <label htmlFor="usuario" className="form-label">Usuario</label>
-              <input type="text" id="usuario" name="usuario" className="form-control" required value={formData.usuario} onChange={handleChange} />
-            </div>
-            <div className="mb-3">
-              <label htmlFor="cedula" className="form-label">Cédula</label>
-              <input type="text" id="cedula" name="cedula" className="form-control" required pattern="\d+" value={formData.cedula} onChange={handleChange} />
-            </div>
-            <div className="mb-3">
-              <label htmlFor="email" className="form-label">Correo Electrónico</label>
-              <input type="email" id="email" name="email" className="form-control" required value={formData.email} onChange={handleChange} />
-            </div>
-            <div className="mb-3">
-              <label htmlFor="password" className="form-label">Contraseña</label>
-              <input type="password" id="password" name="password" className="form-control" required minLength="6" autoComplete="new-password" value={formData.password} onChange={handleChange} />
-            </div>
-            <div className="mb-3">
-              <label htmlFor="telefono" className="form-label">Teléfono</label>
-              <input type="tel" id="telefono" name="telefono" className="form-control" required value={formData.telefono} onChange={handleChange} />
-            </div>
-            <div className="mb-3">
-              <label htmlFor="direccion" className="form-label">Dirección</label>
-              <textarea id="direccion" name="direccion" className="form-control" rows="3" required value={formData.direccion} onChange={handleChange}></textarea>
-            </div>
+      <div className="form-container">
+        <form className="glass-form" onSubmit={handleSubmit} noValidate>
+          <h2 className="text-center mb-4 text-white">Crea tu cuenta</h2>
 
-            <div className="d-flex justify-content-between mt-4">
-              <button type="button" className="btn btn-secondary w-100 me-2">Regresar</button>
-              <button type="submit" className="btn btn-primary w-100">Continuar</button>
-            </div>
-          </form>
-        </section>
-      </main>
+          <div className="mb-3">
+            <input
+              type="text"
+              name="nombre"
+              className={`form-control ${errors.nombre ? 'is-invalid' : ''}`}
+              placeholder="Nombre completo"
+              required
+              value={formData.nombre}
+              onChange={handleChange}
+            />
+            {errors.nombre && <div className="invalid-feedback">{errors.nombre}</div>}
+          </div>
+
+          <div className="mb-3">
+            <input
+              type="text"
+              name="usuario"
+              className={`form-control ${errors.usuario ? 'is-invalid' : ''}`}
+              placeholder="Usuario"
+              required
+              value={formData.usuario}
+              onChange={handleChange}
+            />
+            {errors.usuario && <div className="invalid-feedback">{errors.usuario}</div>}
+          </div>
+
+          <div className="mb-3">
+            <input
+              type="text"
+              name="cedula"
+              className={`form-control ${errors.cedula ? 'is-invalid' : ''}`}
+              placeholder="Cédula"
+              required
+              pattern="\d+"
+              value={formData.cedula}
+              onChange={handleChange}
+            />
+            {errors.cedula && <div className="invalid-feedback">{errors.cedula}</div>}
+          </div>
+
+          <div className="mb-3">
+            <input
+              type="email"
+              name="email"
+              className={`form-control ${errors.email ? 'is-invalid' : ''}`}
+              placeholder="Correo electrónico"
+              required
+              value={formData.email}
+              onChange={handleChange}
+            />
+            {errors.email && <div className="invalid-feedback">{errors.email}</div>}
+          </div>
+
+          <div className="mb-3">
+            <input
+              type="password"
+              name="password"
+              className={`form-control ${errors.password ? 'is-invalid' : ''}`}
+              placeholder="Contraseña"
+              required
+              minLength="6"
+              value={formData.password}
+              onChange={handleChange}
+              autoComplete="new-password"
+            />
+            {errors.password && <div className="invalid-feedback">{errors.password}</div>}
+          </div>
+
+          <div className="mb-3">
+            <input
+              type="tel"
+              name="telefono"
+              className={`form-control ${errors.telefono ? 'is-invalid' : ''}`}
+              placeholder="Teléfono"
+              required
+              value={formData.telefono}
+              onChange={handleChange}
+            />
+            {errors.telefono && <div className="invalid-feedback">{errors.telefono}</div>}
+          </div>
+
+          <div className="mb-3">
+            <textarea
+              name="direccion"
+              className={`form-control ${errors.direccion ? 'is-invalid' : ''}`}
+              rows="2"
+              placeholder="Dirección"
+              required
+              value={formData.direccion}
+              onChange={handleChange}
+            ></textarea>
+            {errors.direccion && <div className="invalid-feedback">{errors.direccion}</div>}
+          </div>
+
+          <button type="submit" className="btn btn-negro-hover-azul w-100 mt-3">
+            Registrarme
+          </button>
+        </form>
+      </div>
 
       <Footer />
     </div>

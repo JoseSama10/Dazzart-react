@@ -2,18 +2,78 @@ const fs = require('fs');
 const path = require('path');
 const pool = require('../config/db');
 
-// Listar todos los productos
+// Listar todos los productos con descuento aplicado si corresponde
 exports.listarProductos = async (req, res) => {
   try {
-    const [rows] = await pool.query('SELECT * FROM producto');
-    res.json(rows);
+    // Traer todos los productos
+    const [productos] = await pool.query('SELECT * FROM producto');
+
+    // Traer todos los descuentos activos (por producto y por categoría)
+    const [descuentos] = await pool.query(`
+      SELECT d.*, dp.id_producto, dc.id_categoria
+      FROM descuento d
+      LEFT JOIN descuento_producto dp ON d.id_descuento = dp.id_descuento
+      LEFT JOIN descuento_categoria dc ON d.id_descuento = dc.id_descuento
+      WHERE d.estado_descuento = 'Activo'
+        AND NOW() BETWEEN d.fecha_inicio AND d.fecha_fin
+    `);
+
+    // Mapear descuentos por producto y por categoría
+    const descuentosPorProducto = {};
+    const descuentosPorCategoria = {};
+    for (const desc of descuentos) {
+      if (desc.id_producto) {
+        descuentosPorProducto[desc.id_producto] = desc;
+      }
+      if (desc.id_categoria) {
+        descuentosPorCategoria[desc.id_categoria] = desc;
+      }
+    }
+
+    // Procesar productos para agregar descuento_aplicado y precio_final
+    const productosConDescuento = productos.map(prod => {
+      let descuento_aplicado = null;
+      let precio_final = prod.precio;
+      // Prioridad: descuento por producto > descuento por categoría
+      let desc = descuentosPorProducto[prod.id_producto] || descuentosPorCategoria[prod.id_categoria];
+      if (desc) {
+        descuento_aplicado = {
+          id_descuento: desc.id_descuento,
+          tipo_descuento: desc.tipo_descuento,
+          valor: desc.valor,
+          aplicacion: desc.aplicacion
+        };
+        // Asegurarse de que los valores sean numéricos
+        const precioBase = Number(prod.precio);
+        const valorDescuento = Number(desc.valor);
+        // Normalizar el tipo de descuento a minúsculas para evitar errores por mayúsculas
+        const tipo = (desc.tipo_descuento || '').toLowerCase();
+        if (tipo === 'porcentaje') {
+          // Cálculo correcto para porcentaje (ej: 15% de 4.800.000 = 720.000 de descuento)
+          precio_final = Math.round(precioBase - (precioBase * valorDescuento / 100));
+        } else if (tipo === 'valor' || tipo === 'fijo') {
+          precio_final = Math.max(0, precioBase - valorDescuento);
+        }
+        // Si por algún motivo el precio final es igual al original, forzar a número fijo
+        if (precio_final === precioBase) {
+          precio_final = Number(precio_final.toFixed(2));
+        }
+      }
+      return {
+        ...prod,
+        descuento_aplicado,
+        precio_final
+      };
+    });
+
+    res.json(productosConDescuento);
   } catch (error) {
     res.status(500).json({ error: 'Error al listar productos' });
   }
 };
 
 // Listar imágenes en /public/img
-// ✅ Controlador
+// Controlador
 exports.listarImagenes = async (req, res) => {
   try {
     const imgDir = path.join(__dirname, '../public/img');
@@ -29,8 +89,60 @@ exports.listarImagenes = async (req, res) => {
 // Obtener un producto por ID
 exports.obtenerProducto = async (req, res) => {
   try {
+    // 1. Obtener el producto
     const [rows] = await pool.query('SELECT * FROM producto WHERE id_producto = ?', [req.params.id]);
-    res.json(rows[0]);
+    if (!rows.length) return res.status(404).json({ error: 'Producto no encontrado' });
+    const prod = rows[0];
+
+    // 2. Traer todos los descuentos activos (por producto y por categoría)
+    const [descuentos] = await pool.query(`
+      SELECT d.*, dp.id_producto, dc.id_categoria
+      FROM descuento d
+      LEFT JOIN descuento_producto dp ON d.id_descuento = dp.id_descuento
+      LEFT JOIN descuento_categoria dc ON d.id_descuento = dc.id_descuento
+      WHERE d.estado_descuento = 'Activo'
+        AND NOW() BETWEEN d.fecha_inicio AND d.fecha_fin
+    `);
+
+    // 3. Mapear descuentos por producto y por categoría
+    const descuentosPorProducto = {};
+    const descuentosPorCategoria = {};
+    for (const desc of descuentos) {
+      if (desc.id_producto) {
+        descuentosPorProducto[desc.id_producto] = desc;
+      }
+      if (desc.id_categoria) {
+        descuentosPorCategoria[desc.id_categoria] = desc;
+      }
+    }
+
+    // 4. Buscar descuento aplicable
+    let descuento_aplicado = null;
+    let precio_final = prod.precio;
+    let desc = descuentosPorProducto[prod.id_producto] || descuentosPorCategoria[prod.id_categoria];
+    if (desc) {
+      descuento_aplicado = {
+        id_descuento: desc.id_descuento,
+        tipo_descuento: desc.tipo_descuento,
+        valor: desc.valor,
+        aplicacion: desc.aplicacion
+      };
+      // Asegurarse de que los valores sean numéricos
+      const precioBase = Number(prod.precio);
+      const valorDescuento = Number(desc.valor);
+      // Normalizar el tipo de descuento a minúsculas
+      const tipo = (desc.tipo_descuento || '').toLowerCase();
+      if (tipo === 'porcentaje') {
+        precio_final = Math.round(precioBase - (precioBase * valorDescuento / 100));
+      } else if (tipo === 'valor' || tipo === 'fijo') {
+        precio_final = Math.max(0, precioBase - valorDescuento);
+      }
+      if (precio_final === precioBase) {
+        precio_final = Number(precio_final.toFixed(2));
+      }
+    }
+
+    res.json({ ...prod, descuento_aplicado, precio_final });
   } catch (error) {
     res.status(500).json({ error: 'Error al obtener producto' });
   }
@@ -124,7 +236,6 @@ exports.actualizarProducto = async (req, res) => {
     res.status(500).json({ error: "Error al actualizar producto" });
   }
 };
-
 
 
 

@@ -1,14 +1,21 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
 import { useNavigate, useParams } from "react-router-dom";
-import SidebarAdmin from "../../components/SidebarAdmin";
+import SidebarAdmin from "../../components/SideBarAdmin.jsx";
 
 const BASE_URL = "http://localhost:3001";
 
 export default function EditarProducto() {
   const { id } = useParams();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const usuario = JSON.parse(localStorage.getItem("usuario"));
+    if (!usuario) {
+      window.location.replace("/");
+    }
+  }, []);
 
   const [producto, setProducto] = useState(null);
   const [imagenArchivo, setImagenArchivo] = useState(null);
@@ -27,8 +34,15 @@ export default function EditarProducto() {
     fecha_creacion: "",
   });
 
+  // Estado para forzar recarga de imagen (cache buster)
+  const [cacheBuster, setCacheBuster] = useState(Date.now());
+
+  // Ref para manejar la URL de la imagen temporal
+  const previewUrlRef = useRef(null);
+
+  // Carga datos iniciales
   useEffect(() => {
-    axios.get(`${BASE_URL}/productos/${id}`).then((res) => {
+    axios.get(`${BASE_URL}/api/productos/${id}`).then((res) => {
       const data = res.data;
       setProducto(data);
       setForm({
@@ -42,19 +56,22 @@ export default function EditarProducto() {
         fecha_creacion: data.fecha_creacion?.split("T")[0] || "",
       });
       setImagenSeleccionada(data.imagen || "");
+      setCacheBuster(Date.now()); // Forzar recarga imagen inicial
     });
 
-    axios.get(`${BASE_URL}/categorias/listar`).then((res) => {
+    axios.get(`${BASE_URL}/api/categorias/listar`).then((res) => {
       setCategorias(res.data || []);
     });
-    axios.get(`${BASE_URL}/productos/listar-imagenes`).then((res) => {
+
+    axios.get(`${BASE_URL}/api/productos/listar-imagenes`).then((res) => {
       setImagenesExistentes(res.data.imagenes || []);
     });
   }, [id]);
 
+  // Filtrar subcategorías cuando cambia la categoría seleccionada
   useEffect(() => {
     if (form.id_categoria) {
-      axios.get(`${BASE_URL}/subcategorias/listar`).then((res) => {
+      axios.get(`${BASE_URL}/api/subcategorias/listar`).then((res) => {
         const filtradas = res.data.filter(
           (s) => String(s.id_categoria) === String(form.id_categoria)
         );
@@ -65,24 +82,45 @@ export default function EditarProducto() {
     }
   }, [form.id_categoria]);
 
+  // Manejar cambios en los inputs
   const handleChange = (e) => {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
   };
 
+  // Manejar selección de nueva imagen (archivo)
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
       setImagenArchivo(file);
-      setImagenSeleccionada("");
+      // No limpiar imagenSeleccionada para mantener preview correcto
     }
   };
 
+  // Manejar selección de imagen existente
   const handleImageSelect = (imgName) => {
     setImagenSeleccionada(imgName);
     setImagenArchivo(null);
+    setCacheBuster(Date.now()); // Forzar recarga imagen seleccionada
   };
 
+  // Liberar URL temporal cuando cambia la imagen de archivo
+  useEffect(() => {
+    if (imagenArchivo) {
+      if (previewUrlRef.current) {
+        URL.revokeObjectURL(previewUrlRef.current);
+      }
+      previewUrlRef.current = URL.createObjectURL(imagenArchivo);
+    }
+    return () => {
+      if (previewUrlRef.current) {
+        URL.revokeObjectURL(previewUrlRef.current);
+        previewUrlRef.current = null;
+      }
+    };
+  }, [imagenArchivo]);
+
+  // Enviar formulario
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -98,7 +136,7 @@ export default function EditarProducto() {
     }
 
     try {
-      await axios.put(`${BASE_URL}/productos/editar/${id}`, fd, {
+      await axios.put(`${BASE_URL}/api/productos/editar/${id}`, fd, {
         headers: { "Content-Type": "multipart/form-data" },
       });
       Swal.fire("Éxito", "Producto actualizado correctamente", "success");
@@ -136,6 +174,19 @@ export default function EditarProducto() {
         >
           <h2 className="mb-4 text-center">Editar Producto</h2>
           <form onSubmit={handleSubmit} encType="multipart/form-data">
+            {/* Número Serial */}
+            <div className="mb-3">
+              <label className="form-label">Número Serial</label>
+              <input
+                type="text"
+                name="numero_serial"
+                value={form.numero_serial}
+                onChange={handleChange}
+                className="form-control"
+                required
+              />
+            </div>
+
             {/* Nombre */}
             <div className="mb-3">
               <label className="form-label">Nombre</label>
@@ -162,7 +213,7 @@ export default function EditarProducto() {
               />
             </div>
 
-            {/* Precio y Stock */}
+            {/* Precio y Stock lado a lado */}
             <div className="row">
               <div className="mb-3 col-md-6">
                 <label className="form-label">Precio</label>
@@ -173,6 +224,7 @@ export default function EditarProducto() {
                   onChange={handleChange}
                   className="form-control"
                   step="0.01"
+                  min="0"
                   required
                 />
               </div>
@@ -184,6 +236,7 @@ export default function EditarProducto() {
                   value={form.stock}
                   onChange={handleChange}
                   className="form-control"
+                  min="0"
                   required
                 />
               </div>
@@ -250,12 +303,13 @@ export default function EditarProducto() {
               />
             </div>
 
+            {/* Selección de imagen existente */}
             <div className="mb-3">
               <div className="d-flex flex-wrap gap-2">
                 {imagenesExistentes.map((img) => (
                   <img
                     key={img}
-                    src={`${BASE_URL}/productos/img/${img}`}
+                    src={`${BASE_URL}/productos/img/${encodeURIComponent(img)}`}
                     onClick={() => handleImageSelect(img)}
                     alt={img}
                     style={{
@@ -278,20 +332,37 @@ export default function EditarProducto() {
             {(imagenArchivo || imagenSeleccionada) && (
               <div className="mb-3">
                 <strong>Vista previa:</strong>
-                <div>
+                <div
+                  style={{
+                    width: "150px",
+                    height: "150px",
+                    marginTop: "10px",
+                    border: "1px solid #ccc",
+                    borderRadius: "4px",
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    overflow: "hidden",
+                    backgroundColor: "#f9f9f9",
+                  }}
+                >
                   <img
                     src={
                       imagenArchivo
-                        ? URL.createObjectURL(imagenArchivo)
-                        : `${BASE_URL}/productos/img/${imagenSeleccionada}`
+                        ? previewUrlRef.current
+                        : imagenSeleccionada
+                        ? `${BASE_URL}/productos/img/${encodeURIComponent(
+                            imagenSeleccionada
+                          )}?t=${cacheBuster}`
+                        : "/default.png"
                     }
                     alt="preview"
                     style={{
-                      width: "150px",
-                      height: "150px",
+                      maxWidth: "100%",
+                      maxHeight: "100%",
                       objectFit: "contain",
-                      marginTop: "10px",
                     }}
+                    onError={(e) => (e.target.src = "/default.png")}
                   />
                 </div>
               </div>

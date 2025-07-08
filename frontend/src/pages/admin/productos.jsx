@@ -7,18 +7,19 @@ import "datatables.net-bs5/css/dataTables.bootstrap5.min.css";
 import "../../css/CSSA/gestionproductos.css";
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
 import Swal from "sweetalert2";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
-import SidebarAdmin from "../../components/SidebarAdmin";
+import SidebarAdmin from "../../components/SideBarAdmin.jsx";
 
 const BASE_URL = "http://localhost:3001";
 
 export default function ProductosAdmin() {
   const [productos, setProductos] = useState([]);
+  const navigate = useNavigate();
 
   const cargarProductos = async () => {
     try {
-      const res = await axios.get(`${BASE_URL}/productos/listar`);
+      const res = await axios.get(`${BASE_URL}/api/productos/listar`);
       if (Array.isArray(res.data)) {
         setProductos(res.data);
       } else {
@@ -29,6 +30,13 @@ export default function ProductosAdmin() {
       console.error("Error al obtener productos:", error);
     }
   };
+
+  useEffect(() => {
+    const usuario = JSON.parse(localStorage.getItem("usuario"));
+    if (!usuario) {
+      window.location.replace("/");
+    }
+  }, []);
 
   useEffect(() => {
     cargarProductos();
@@ -71,44 +79,43 @@ export default function ProductosAdmin() {
     };
   }, [productos]);
 
-const eliminarProducto = async (id) => {
-  const confirm = await Swal.fire({
-    icon: "question",
-    title: "Eliminar producto",
-    text: "¿Estás seguro de eliminar este producto?",
-    showCancelButton: true,
-    confirmButtonText: "Sí, eliminar",
-    cancelButtonText: "Cancelar",
-  });
+  const eliminarProducto = async (id) => {
+    const confirm = await Swal.fire({
+      icon: "question",
+      title: "Eliminar producto",
+      text: "¿Estás seguro de eliminar este producto?",
+      showCancelButton: true,
+      confirmButtonText: "Sí, eliminar",
+      cancelButtonText: "Cancelar",
+    });
 
-  if (!confirm.isConfirmed) return;
+    if (!confirm.isConfirmed) return;
 
-  try {
-    const response = await axios.delete(`${BASE_URL}/productos/eliminar/${id}`);
-    if (response.status === 200) {
-      // Destruye DataTable para evitar duplicados
-      if ($.fn.DataTable.isDataTable("#tablaProductos")) {
-        $("#tablaProductos").DataTable().destroy();
+    try {
+      const response = await axios.delete(`${BASE_URL}/productos/eliminar/${id}`);
+      if (response.status === 200) {
+        // Destruye DataTable para evitar duplicados
+        if ($.fn.DataTable.isDataTable("#tablaProductos")) {
+          $("#tablaProductos").DataTable().destroy();
+        }
+        // Recarga productos
+        cargarProductos();
+
+        await Swal.fire({
+          icon: "success",
+          title: "Producto eliminado",
+          text: "El producto ha sido eliminado con éxito.",
+        });
       }
-      // Recarga productos
-      cargarProductos();
-
-      await Swal.fire({
-        icon: "success",
-        title: "Producto eliminado",
-        text: "El producto ha sido eliminado con éxito.",
+    } catch (error) {
+      console.error("Error al eliminar:", error);
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: "No se pudo eliminar el producto.",
       });
     }
-  } catch (error) {
-    console.error("Error al eliminar:", error);
-    Swal.fire({
-      icon: "error",
-      title: "Error",
-      text: "No se pudo eliminar el producto.",
-    });
-  }
-};
-
+  };
 
   return (
     <>

@@ -2,12 +2,19 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
-import SidebarAdmin from "../../components/SidebarAdmin";
+import SidebarAdmin from "../../components/SideBarAdmin.jsx";
 
 const BASE_URL = "http://localhost:3001";
 
 export default function AñadirProducto() {
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const usuario = JSON.parse(localStorage.getItem("usuario"));
+    if (!usuario) {
+      window.location.replace("/");
+    }
+  }, []);
 
   const [form, setForm] = useState({
     numero_serial: "",
@@ -28,17 +35,17 @@ export default function AñadirProducto() {
   const [imagenesExistentes, setImagenesExistentes] = useState([]);
 
   useEffect(() => {
-    axios.get(`${BASE_URL}/categorias/listar`).then((res) => {
+    axios.get(`${BASE_URL}/api/categorias/listar`).then((res) => {
       setCategorias(res.data || []);
     });
-    axios.get(`${BASE_URL}/productos/listar-imagenes`).then((res) => {
+    axios.get(`${BASE_URL}/api/productos/listar-imagenes`).then((res) => {
       setImagenesExistentes(res.data.imagenes || []);
     });
   }, []);
 
   useEffect(() => {
     if (form.id_categoria) {
-      axios.get(`${BASE_URL}/subcategorias/listar`).then((res) => {
+      axios.get(`${BASE_URL}/api/subcategorias/listar`).then((res) => {
         const filtradas = res.data.filter(
           (s) => String(s.id_categoria) === String(form.id_categoria)
         );
@@ -79,11 +86,12 @@ export default function AñadirProducto() {
     if (imagenNueva) {
       fd.append("imagen", imagenNueva);
     } else if (imagenSeleccionada) {
-      fd.append("imagen", imagenSeleccionada);
+      // Si no subes archivo, envías solo el nombre de la imagen
+      fd.append("imagen_nombre", imagenSeleccionada);
     }
 
     try {
-      await axios.post(`${BASE_URL}/productos/agregar`, fd, {
+      await axios.post(`${BASE_URL}/api/productos/agregar`, fd, {
         headers: { "Content-Type": "multipart/form-data" },
       });
 
@@ -168,40 +176,41 @@ export default function AñadirProducto() {
               />
             </div>
 
-            {/* Precio */}
-            <div className="mb-3">
-              <label htmlFor="precio" className="form-label">
-                Precio
-              </label>
-              <input
-                type="number"
-                id="precio"
-                name="precio"
-                value={form.precio}
-                onChange={handleChange}
-                className="form-control"
-                min="0"
-                step="0.01"
-                required
-              />
-            </div>
+{/* Precio y Stock en la misma fila */}
+<div className="mb-3 d-flex gap-3">
+  <div style={{ flex: 1 }}>
+    <label htmlFor="precio" className="form-label">
+      Precio
+    </label>
+    <input
+      type="number"
+      id="precio"
+      name="precio"
+      value={form.precio}
+      onChange={handleChange}
+      className="form-control"
+      min="0"
+      step="0.01"
+      required
+    />
+  </div>
 
-            {/* Stock */}
-            <div className="mb-3">
-              <label htmlFor="stock" className="form-label">
-                Stock
-              </label>
-              <input
-                type="number"
-                id="stock"
-                name="stock"
-                value={form.stock}
-                onChange={handleChange}
-                className="form-control"
-                min="0"
-                required
-              />
-            </div>
+  <div style={{ flex: 1 }}>
+    <label htmlFor="stock" className="form-label">
+      Stock
+    </label>
+    <input
+      type="number"
+      id="stock"
+      name="stock"
+      value={form.stock}
+      onChange={handleChange}
+      className="form-control"
+      min="0"
+      required
+    />
+  </div>
+</div>
 
             {/* Categoría */}
             <div className="mb-3">

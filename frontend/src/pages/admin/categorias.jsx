@@ -7,18 +7,20 @@ import "datatables.net-bs5/css/dataTables.bootstrap5.min.css";
 import "../../css/CSSA/gestionproductos.css";
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
 import Swal from "sweetalert2";
+import { useNavigate } from "react-router-dom";
 
-import SidebarAdmin from "../../components/SidebarAdmin";
+import SidebarAdmin from "../../components/SideBarAdmin.jsx";
 
 export default function CategoriasAdmin() {
   const [categorias, setCategorias] = useState([]);
   const [form, setForm] = useState({ nombre: "", descripcion: "" });
   const [showEditModal, setShowEditModal] = useState(false);
   const [editForm, setEditForm] = useState({ id_categoria: null, nombre: "", descripcion: "" });
+  const navigate = useNavigate();
 
   const cargarCategorias = () => {
     axios
-      .get("http://localhost:3001/categorias/listar")
+      .get("http://localhost:3001/api/categorias/listar")
       .then((res) => {
         if (Array.isArray(res.data)) {
           setCategorias(res.data);
@@ -58,6 +60,13 @@ export default function CategoriasAdmin() {
   };
 
   useEffect(() => {
+    const usuario = JSON.parse(localStorage.getItem("usuario"));
+    if (!usuario) {
+      window.location.replace("/");
+    }
+  }, []);
+
+  useEffect(() => {
     cargarCategorias();
   }, []);
 
@@ -70,7 +79,7 @@ export default function CategoriasAdmin() {
     if (!form.nombre || !form.descripcion) return;
 
     try {
-      await axios.post("http://localhost:3001/categorias/agregar", form);
+      await axios.post("http://localhost:3001/api/categorias/agregar", form);
       Swal.fire("Agregado", "Categoría agregada con éxito", "success");
       setForm({ nombre: "", descripcion: "" });
       if ($.fn.DataTable.isDataTable("#tablaCategorias")) {
@@ -96,7 +105,7 @@ export default function CategoriasAdmin() {
     if (!confirm.isConfirmed) return;
 
     try {
-      const response = await axios.delete(`http://localhost:3001/categorias/eliminar/${id}`);
+      const response = await axios.delete(`http://localhost:3001/api/categorias/eliminar/${id}`);
       if (response.status === 200) {
         await Swal.fire({
           icon: "success",
@@ -139,7 +148,7 @@ export default function CategoriasAdmin() {
       return;
     }
     try {
-      await axios.put(`http://localhost:3001/categorias/editar/${id_categoria}`, {
+      await axios.put(`http://localhost:3001/api/categorias/editar/${id_categoria}`, {
         nombre_categoria: nombre,
         descripcion_categoria: descripcion,
       });
@@ -155,150 +164,148 @@ export default function CategoriasAdmin() {
     }
   };
 
-return (
-  <>
-    <div className="d-flex">
-      <SidebarAdmin />
+  return (
+    <>
+      <div className="d-flex">
+        <SidebarAdmin />
 
-      <main className="flex-grow-1 p-4" style={{ marginLeft: "280px" }}>
-        {/* Botón menú móvil para abrir sidebar */}
-        <button
-          className="btn btn-dark d-md-none mb-3"
-          type="button"
-          data-bs-toggle="offcanvas"
-          data-bs-target="#sidebarMenu"
-          aria-controls="sidebarMenu"
-        >
-          ☰ Menú
-        </button>
+        <main className="flex-grow-1 p-4" style={{ marginLeft: "280px" }}>
+          <button
+            className="btn btn-dark d-md-none mb-3"
+            type="button"
+            data-bs-toggle="offcanvas"
+            data-bs-target="#sidebarMenu"
+            aria-controls="sidebarMenu"
+          >
+            ☰ Menú
+          </button>
 
-        <h2>Agregar nueva categoría</h2>
-        <form className="row g-3 mb-4" onSubmit={handleSubmit}>
-          <div className="col-md-4">
-            <input
-              type="text"
-              name="nombre"
-              className="form-control"
-              placeholder="Nombre"
-              value={form.nombre}
-              onChange={handleChange}
-              required
-            />
-          </div>
-          <div className="col-md-4">
-            <input
-              type="text"
-              name="descripcion"
-              className="form-control"
-              placeholder="Descripción"
-              value={form.descripcion}
-              onChange={handleChange}
-              required
-            />
-          </div>
-          <div className="col-md-2">
-            <button type="submit" className="btn btn-warning text-white w-100">
-              Añadir
-            </button>
-          </div>
-        </form>
-
-        <table className="table table-striped table-hover" id="tablaCategorias">
-          <thead className="table-dark">
-            <tr>
-              <th>ID Categoría</th>
-              <th>Nombre</th>
-              <th>Descripción</th>
-              <th>Acciones</th>
-            </tr>
-          </thead>
-          <tbody>
-            {categorias.map((categoria) => (
-              <tr key={categoria.id_categoria}>
-                <td>{categoria.id_categoria}</td>
-                <td>{categoria.nombre_categoria}</td>
-                <td>{categoria.descripcion_categoria}</td>
-                <td>
-                  <button
-                    className="btn btn-success me-2"
-                    onClick={() => abrirEditarModal(categoria)}
-                  >
-                    Editar
-                  </button>
-                  <button
-                    className="btn btn-danger"
-                    onClick={() => eliminarCategoria(categoria.id_categoria)}
-                  >
-                    Eliminar
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </main>
-    </div>
-
-    {/* Modal para editar */}
-    <div
-      className={`modal fade ${showEditModal ? "show d-block" : ""}`}
-      tabIndex="-1"
-      role="dialog"
-      style={{ backgroundColor: showEditModal ? "rgba(0,0,0,0.5)" : "transparent" }}
-      onClick={() => setShowEditModal(false)}
-    >
-      <div className="modal-dialog" role="document" onClick={(e) => e.stopPropagation()}>
-        <div className="modal-content">
-          <form onSubmit={guardarEdicion}>
-            <div className="modal-header">
-              <h5 className="modal-title">Editar Categoría</h5>
-              <button
-                type="button"
-                className="btn-close"
-                onClick={() => setShowEditModal(false)}
-              ></button>
+          <h2>Agregar nueva categoría</h2>
+          <form className="row g-3 mb-4" onSubmit={handleSubmit}>
+            <div className="col-md-4">
+              <input
+                type="text"
+                name="nombre"
+                className="form-control"
+                placeholder="Nombre"
+                value={form.nombre}
+                onChange={handleChange}
+                required
+              />
             </div>
-            <div className="modal-body">
-              <div className="mb-3">
-                <label className="form-label">Nombre</label>
-                <input
-                  type="text"
-                  name="nombre"
-                  className="form-control"
-                  value={editForm.nombre}
-                  onChange={handleEditChange}
-                  required
-                />
-              </div>
-              <div className="mb-3">
-                <label className="form-label">Descripción</label>
-                <input
-                  type="text"
-                  name="descripcion"
-                  className="form-control"
-                  value={editForm.descripcion}
-                  onChange={handleEditChange}
-                  required
-                />
-              </div>
+            <div className="col-md-4">
+              <input
+                type="text"
+                name="descripcion"
+                className="form-control"
+                placeholder="Descripción"
+                value={form.descripcion}
+                onChange={handleChange}
+                required
+              />
             </div>
-            <div className="modal-footer">
-              <button
-                type="button"
-                className="btn btn-secondary"
-                onClick={() => setShowEditModal(false)}
-              >
-                Cancelar
-              </button>
-              <button type="submit" className="btn btn-primary">
-                Guardar Cambios
+            <div className="col-md-2">
+              <button type="submit" className="btn btn-warning text-white w-100">
+                Añadir
               </button>
             </div>
           </form>
+
+          <table className="table table-striped table-hover" id="tablaCategorias">
+            <thead className="table-dark">
+              <tr>
+                <th>ID Categoría</th>
+                <th>Nombre</th>
+                <th>Descripción</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              {categorias.map((categoria) => (
+                <tr key={categoria.id_categoria}>
+                  <td>{categoria.id_categoria}</td>
+                  <td>{categoria.nombre_categoria}</td>
+                  <td>{categoria.descripcion_categoria}</td>
+                  <td>
+                    <button
+                      className="btn btn-success me-2"
+                      onClick={() => abrirEditarModal(categoria)}
+                    >
+                      Editar
+                    </button>
+                    <button
+                      className="btn btn-danger"
+                      onClick={() => eliminarCategoria(categoria.id_categoria)}
+                    >
+                      Eliminar
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </main>
+      </div>
+
+      {/* Modal para editar */}
+      <div
+        className={`modal fade ${showEditModal ? "show d-block" : ""}`}
+        tabIndex="-1"
+        role="dialog"
+        style={{ backgroundColor: showEditModal ? "rgba(0,0,0,0.5)" : "transparent" }}
+        onClick={() => setShowEditModal(false)}
+      >
+        <div className="modal-dialog" role="document" onClick={(e) => e.stopPropagation()}>
+          <div className="modal-content">
+            <form onSubmit={guardarEdicion}>
+              <div className="modal-header">
+                <h5 className="modal-title">Editar Categoría</h5>
+                <button
+                  type="button"
+                  className="btn-close"
+                  onClick={() => setShowEditModal(false)}
+                ></button>
+              </div>
+              <div className="modal-body">
+                <div className="mb-3">
+                  <label className="form-label">Nombre</label>
+                  <input
+                    type="text"
+                    name="nombre"
+                    className="form-control"
+                    value={editForm.nombre}
+                    onChange={handleEditChange}
+                    required
+                  />
+                </div>
+                <div className="mb-3">
+                  <label className="form-label">Descripción</label>
+                  <input
+                    type="text"
+                    name="descripcion"
+                    className="form-control"
+                    value={editForm.descripcion}
+                    onChange={handleEditChange}
+                    required
+                  />
+                </div>
+              </div>
+              <div className="modal-footer">
+                <button
+                  type="button"
+                  className="btn btn-secondary"
+                  onClick={() => setShowEditModal(false)}
+                >
+                  Cancelar
+                </button>
+                <button type="submit" className="btn btn-primary">
+                  Guardar Cambios
+                </button>
+              </div>
+            </form>
+          </div>
         </div>
       </div>
-    </div>
-  </>
-);
-
+    </>
+  );
 }

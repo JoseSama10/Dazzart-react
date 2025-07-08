@@ -44,12 +44,14 @@ header .btn:hover {
 /* Logo estilo retro */
 .text-logo {
   font-family: 'Press Start 2P', cursive;
-  font-size: 24px;
+  font-size: 10px; /* antes 14px */
   line-height: 1.2;
   color: #111;
   text-decoration: none;
   letter-spacing: 1px;
 }
+
+
 
 .text-logo span {
   color: #000000;
@@ -58,26 +60,28 @@ header .btn:hover {
 /* Barra de búsqueda */
 .search-wrapper {
   position: relative;
-  max-width: 400px;
-  width: 100%;
-}
-
-.search-icon {
-  position: absolute;
-  top: 50%;
-  left: 367px;
-  transform: translateY(-50%);
-  color: #000000;
-  font-size: 14px;
-  pointer-events: none;
+  background-color: #f0f0f0;
+  border-radius: 15px;
+  padding: 8px 12px;
+  display: flex;
+  align-items: center;
+  width: 260px;
+  height: 40px;
 }
 
 .search-input {
-  padding-left: 36px;
-  height: 36px;
+  border: none;
+  outline: none;
+  background: transparent;
+  flex: 1;
   font-size: 14px;
-  border-radius: 20px;
-  border: 1px solid #ccc;
+  color: #333;
+}
+
+.search-icon {
+  color: #333;
+  margin-left: 8px;
+  cursor: pointer;
 }
 
 

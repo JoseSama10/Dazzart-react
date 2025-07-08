@@ -5,6 +5,7 @@ import EditarUsuario from "./pages/admin/EditarUsuario";
 import DescuentosAdmin  from "./pages/admin/Descuento";
 import FormularioDescuento from "./pages/admin/FormularioDescuento";
 import EditarDescuento from "./pages/admin/EditarDescuento";
+import Registro from "./pages/Cliente/Registro";
 function App() {
   return (
     <BrowserRouter>
@@ -16,7 +17,7 @@ function App() {
         <Route path="/admin-descuento" element={<DescuentosAdmin/>}/>
         <Route path="/agregar-descuento" element={<FormularioDescuento/>}/>
         <Route path="/editar-descuento/:id"  element={<EditarDescuento/>}/>
-        
+        <Route path="/Registro" element={<Registro/>}/>
       </Routes>
     </BrowserRouter>
   );

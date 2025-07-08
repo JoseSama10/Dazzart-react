@@ -140,29 +140,35 @@ export default function CategoriasAdmin() {
     setEditForm({ ...editForm, [e.target.name]: e.target.value });
   };
 
-  const guardarEdicion = async (e) => {
-    e.preventDefault();
-    const { id_categoria, nombre, descripcion } = editForm;
-    if (!nombre || !descripcion) {
-      Swal.fire("Error", "Nombre y descripción son obligatorios", "error");
-      return;
+const guardarEdicion = async (e) => {
+  e.preventDefault();
+  const { id_categoria, nombre, descripcion } = editForm;
+
+  if (!nombre || !descripcion) {
+    Swal.fire("Error", "Nombre y descripción son obligatorios", "error");
+    return;
+  }
+
+  try {
+    // Enviamos las claves correctas según espera el backend
+    await axios.put(`http://localhost:3001/api/categorias/editar/${id_categoria}`, {
+      nombre: nombre,
+      descripcion: descripcion,
+    });
+
+    Swal.fire("Guardado", "Categoría actualizada con éxito", "success");
+    setShowEditModal(false);
+
+    if ($.fn.DataTable.isDataTable("#tablaCategorias")) {
+      $("#tablaCategorias").DataTable().destroy();
     }
-    try {
-      await axios.put(`http://localhost:3001/api/categorias/editar/${id_categoria}`, {
-        nombre_categoria: nombre,
-        descripcion_categoria: descripcion,
-      });
-      Swal.fire("Guardado", "Categoría actualizada con éxito", "success");
-      setShowEditModal(false);
-      if ($.fn.DataTable.isDataTable("#tablaCategorias")) {
-        $("#tablaCategorias").DataTable().destroy();
-      }
-      cargarCategorias();
-    } catch (error) {
-      console.error(error);
-      Swal.fire("Error", "No se pudo actualizar la categoría", "error");
-    }
-  };
+    cargarCategorias();
+  } catch (error) {
+    console.error(error);
+    Swal.fire("Error", "No se pudo actualizar la categoría", "error");
+  }
+};
+
 
   return (
     <>

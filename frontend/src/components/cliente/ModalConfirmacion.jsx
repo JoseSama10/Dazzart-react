@@ -1,32 +1,40 @@
+import ReactDOM from 'react-dom';
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
-import '../../Styles/ModalConfirmacion.css'; // Asegúrate de tener este archivo
+import '../../css/CSS/ModalProducto.css'; // Unificar estilos modernos
 
-export default function ModalConfirmacion({ show, mensaje, onClose, onIrCarrito }) {
-  const navigate = useNavigate();
-
+export default function ModalConfirmacion({
+  show,
+  mensaje,
+  onClose,
+  onIrCarrito,
+  textoBoton = "Ir al carrito",
+  textoCerrar = "Cerrar",
+  titulo = "Producto agregado",
+  icono = "\u2714"
+}) {
   if (!show) return null;
 
-  const irAlCarrito = () => {
-    onClose();
-    navigate('/carrito');
-  };
-
-  return (
-    <div className="modal-confirm-backdrop">
-      <div className="modal-confirm-container animate-pop">
-        <div className="modal-icon">✅</div>
-        <h4 className="modal-title">¡Producto agregado!</h4>
-        <p className="modal-message">{mensaje}</p>
-        <div className="d-flex justify-content-center gap-3 mt-4">
-          <button className="btn btn-success" onClick={onIrCarrito}>
-            Ir al carrito de compras
+  const modal = (
+    <div className="modal1" style={{zIndex: 9999}}>
+      <div className="modal-contenido" style={{maxWidth: 400, minHeight: 0, flexDirection: 'column', gap: '1.2rem', alignItems: 'center', justifyContent: 'center'}}>
+        <div className="cerrar" onClick={onClose}>&times;</div>
+        {icono && <div className="modal-icon" style={{fontSize:'2.5rem', color:'#0084ff', marginBottom:'0.5rem'}}>{icono}</div>}
+        <div className="modal-title" style={{fontWeight:'bold', fontSize:'1.3rem', color:'#222'}}>{titulo}</div>
+        <div className="modal-message" style={{color:'#444', fontSize:'1.05rem'}}>{mensaje}</div>
+        <div className="d-flex justify-content-around mt-4 w-100" style={{gap:'1rem'}}>
+          <button className="agregar-carrito w-100" style={{background:'#fff', color:'#0084ff', border:'2px solid #0084ff'}} onClick={onClose}>
+            {textoCerrar}
           </button>
-          <button className="btn btn-secondary" onClick={onClose}>
-            Cerrar
-          </button>
+          {onIrCarrito && (
+            <button className="agregar-carrito w-100" onClick={onIrCarrito}>
+              {textoBoton}
+            </button>
+          )}
         </div>
       </div>
     </div>
   );
+
+  // Usa React Portal para evitar conflictos con la estructura del DOM
+  return ReactDOM.createPortal(modal, document.body);
 }

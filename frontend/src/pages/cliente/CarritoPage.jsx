@@ -1,45 +1,86 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faShoppingCart } from '@fortawesome/free-solid-svg-icons';
-import Carrito from '../../components/cliente/carrito';
+
+import Headersimple from '../../components/cliente/SimpleHeader'
+import Footer from '../../components/cliente/Footer';
+import Carrito from '../../components/cliente/Carrito';
 import ModalConfirmacion from '../../components/cliente/ModalConfirmacion';
-import '../../Styles/CarritoPage.css';
+import ModalLogin from '../../components/cliente/ModalLogin';
+
+import '../../css/CSS/CarritoPage.css';
 
 export default function CarritoPage() {
-  const id_usuario = 1;
-  const [mostrarModal, setMostrarModal] = useState(false);
-  const [modalMensaje, setModalMensaje] = useState('');
-  const [productoSeleccionado, setProductoSeleccionado] = useState(null);
   const navigate = useNavigate();
 
+  // Usuario desde localStorage
+  const usuarioGuardado = localStorage.getItem('usuario');
+  const usuario = usuarioGuardado ? JSON.parse(usuarioGuardado) : null;
+  const id_usuario = usuario ? usuario.id_usuario : null;
+  const direccion = usuario ? usuario.direccion : '';
+
+  // Estados para modales
+  const [mostrarModal, setMostrarModal] = useState(false);
+  const [modalMensaje, setModalMensaje] = useState('');
+  const [mostrarLogin, setMostrarLogin] = useState(false);
+  const [showMenu, setShowMenu] = useState(false);
+  const [mostrarCarrito, setMostrarCarrito] = useState(false);
+
+  // Logout
+  const handleLogout = () => {
+    localStorage.removeItem('usuario');
+    window.location.reload();
+  };
+
+  // Abrir login modal
+  const handleOpenLogin = () => setMostrarLogin(true);
+
+  // Cerrar login modal
+  const handleCloseLogin = () => setMostrarLogin(false);
+
+  // Al hacer login con éxito
+  const onLoginSuccess = (user) => {
+    localStorage.setItem('usuario', JSON.stringify(user));
+    setMostrarLogin(false);
+    window.location.reload();
+  };
+
   return (
-    <div className="container py-3">
-      <div className="row justify-content-center">
-        <div className="col-lg-15">
-          <div className="card shadow-lg border-0">
-            <div className="card-header bg-dark text-white text-center">
-              <h2 className="mb-0">
-                <FontAwesomeIcon icon={faShoppingCart} className="me-2" />
-                Mi Carrito
-              </h2>
-            </div>
-            <div className="card-body bg-light">
-              <Carrito id_usuario={id_usuario} />
-            </div>
-          </div>
-        </div>
-      </div>
+    <div className="d-flex flex-column min-vh-100">
+      {/* Header */}
+     <Headersimple/>
+
+      {/* Main */}
+      <main className="container mt-5 flex-grow-1">
+        <Carrito
+          id_usuario={id_usuario}
+          direccion={direccion}
+          onOpenLogin={handleOpenLogin}
+        />
+      </main>
+
+      {/* Footer */}
+      <Footer />
+
+      {/* Modales */}
       <ModalConfirmacion
         show={mostrarModal}
         mensaje={modalMensaje}
         onClose={() => setMostrarModal(false)}
         onIrCarrito={() => {
-          setProductoSeleccionado(null); // Limpia el detalle
-          setMostrarModal(false);        // Cierra el modal
-          navigate('/carrito');          // Navega al carrito
+          setMostrarModal(false);
+          navigate('/carrito');
         }}
       />
+
+      {mostrarLogin && (
+        <ModalLogin
+          visible={mostrarLogin}
+          onClose={handleCloseLogin}
+          onLoginSuccess={onLoginSuccess}
+        />
+      )}
+
+      {/* Aquí podrías agregar menú lateral o carrito modal si los manejas desde aquí */}
     </div>
   );
 }

@@ -1,18 +1,20 @@
 const express = require('express');
 const router = express.Router();
-const { obtenerPedidos, obtenerPedidoPorId, crearPedido } = require('../controllers/pedidosController');
 
-//Ruta para obtener todos los pedidos
+const {
+  obtenerPedidos,
+  obtenerPedidoPorId,
+  crearPedido,
+  obtenerPedidosPorUsuario,
+  cancelarPedido,
+  actualizarEstadoPedido
+} = require('../controllers/pedidosController');
+
 router.get('/', obtenerPedidos);
-
-
-//Nueva ruta para obtener un solo pedido por ID
+router.get('/usuario/:id_usuario', obtenerPedidosPorUsuario);
+router.put('/actualizar-estado/:id_factura', actualizarEstadoPedido);
+router.put('/cancelar/:id_factura', cancelarPedido);
 router.get('/:id', obtenerPedidoPorId);
-
-
-// Ruta para crear un pedido
 router.post('/', crearPedido);
 
-
 module.exports = router;
-

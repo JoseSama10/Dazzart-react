@@ -51,14 +51,12 @@ export default function ClienteHome() {
   };
 
   useEffect(() => {
-    fetch('http://localhost:3001/api/productos')
-      .then((res) => res.json())
-      .then((data) => {
-        console.log('Productos recibidos:', data);
-        setProductos(data);
-      })
-      .catch((err) => console.error('Error al obtener productos:', err));
-  }, []);
+  fetch('http://localhost:3001/api/productos')
+    .then(res => res.json())
+    .then(data => setProductos(data))
+    .catch(error => console.error('Error al obtener productos:', error));
+}, []);
+
 
   return (
     <div className="cliente-home-container">

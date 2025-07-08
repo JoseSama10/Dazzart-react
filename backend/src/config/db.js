@@ -1,19 +1,21 @@
-// backend/src/db.js
-const mysql = require('mysql2');
+const mysql = require('mysql2/promise');
 
-const db = mysql.createConnection({
+const pool = mysql.createPool({
   host: 'localhost',
   user: 'root',
-  password: 'valecita', 
-  database: 'dazzart'
+  password: 'valecita',
+  database: 'dazzart',
 });
 
-db.connect((err) => {
-  if (err) {
-    console.error('Error al conectar a la base de datos:', err);
-  } else {
-    console.log('Conexión a la base de datos MySQL exitosa');
+(async () => {
+  try {
+    // Prueba simple para ver si la conexión funciona:
+    const connection = await pool.getConnection();
+    console.log('Conectado a MySQL correctamente.');
+    connection.release();
+  } catch (error) {
+    console.error('Error al conectar a MySQL:', error);
   }
-});
+})();
 
-module.exports = db;
+module.exports = pool;
